@@ -9,6 +9,34 @@ defined( 'ABSPATH' ) || exit;
 class PV_Source_XVideos {
 	const SOURCE = 'xvideos';
 
+	/**
+	 * Elimina etichette tecniche di qualità dal titolo.
+	 * Restituisce una stringa vuota se resta soltanto un'etichetta tecnica.
+	 */
+	private static function clean_video_title( $title ) {
+		$title = html_entity_decode( (string) $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$title = wp_strip_all_tags( $title );
+		$title = preg_replace( '/[\x{00A0}\s]+/u', ' ', $title );
+		$title = trim( $title );
+
+		if ( '' === $title ) {
+			return '';
+		}
+
+		// Rimuove risoluzioni e sigle video, anche tra parentesi o separate da trattini.
+		$title = preg_replace( '/\b(?:2160p|1440p|1080p|720p|576p|480p|360p|240p|144p|4k|8k|uhd|fhd|full\s*hd|hd|sd)\b/iu', ' ', $title );
+		$title = preg_replace( '/\s*[-|–—:;,]+\s*/u', ' ', $title );
+		$title = preg_replace( '/[\x{00A0}\s]+/u', ' ', $title );
+		$title = trim( $title, " \t\n\r\0\x0B-_|–—:;,." );
+
+		// Non pubblicare titoli composti esclusivamente da etichette tecniche o simboli.
+		if ( '' === $title || ! preg_match( '/[\p{L}\p{N}]{2,}/u', $title ) ) {
+			return '';
+		}
+
+		return sanitize_text_field( $title );
+	}
+
 	public static function search_and_import( $query, $limit = 5, $category = '', $page = 0 ) {
 		$query = trim( sanitize_text_field( $query ) );
 		$limit = max( 1, min( 100, absint( $limit ) ) );
@@ -66,13 +94,18 @@ class PV_Source_XVideos {
 				if ( isset( $found[ $id ] ) ) {
 					continue;
 				}
-				$title = trim( $node->getAttribute( 'title' ) );
+
+				// Prova prima l'attributo title, poi il testo visibile dell'elemento.
+				$title = self::clean_video_title( $node->getAttribute( 'title' ) );
 				if ( '' === $title ) {
-					$title = trim( preg_replace( '/\s+/', ' ', $node->textContent ) );
+					$title = self::clean_video_title( $node->textContent );
 				}
+				// Se questa occorrenza contiene solo 1080p/720p ecc., prova eventuali
+				// altre occorrenze dello stesso video nella pagina invece di importarla.
 				if ( '' === $title ) {
 					continue;
 				}
+
 				$thumb = '';
 				$images = $xpath->query( './/img', $node );
 				if ( $images && $images->length ) {
@@ -87,7 +120,7 @@ class PV_Source_XVideos {
 				}
 				$found[ $id ] = array(
 					'id' => $id,
-					'title' => sanitize_text_field( $title ),
+					'title' => $title,
 					'url' => esc_url_raw( $full_url ),
 					'embed' => 'https://www.xvideos.com/embedframe/' . rawurlencode( $id ),
 					'thumbnail' => $thumb,
@@ -99,7 +132,7 @@ class PV_Source_XVideos {
 		}
 
 		if ( empty( $found ) ) {
-			return self::result( 'error', __( 'Nessun risultato leggibile. La struttura della pagina potrebbe essere cambiata o il sito potrebbe non consentire la richiesta.', 'pornovirtuale' ) );
+			return self::result( 'error', __( 'Nessun risultato con un titolo valido. La struttura della pagina potrebbe essere cambiata o i risultati potrebbero contenere soltanto etichette tecniche.', 'pornovirtuale' ) );
 		}
 
 		$imported = 0;
@@ -140,7 +173,7 @@ class PV_Source_XVideos {
 				'post_status' => 'future',
 				'post_date' => $publish_at->format( 'Y-m-d H:i:s' ),
 				'post_date_gmt' => get_gmt_from_date( $publish_at->format( 'Y-m-d H:i:s' ) ),
-				'post_title' => wp_strip_all_tags( $item['title'] ),
+				'post_title' => $item['title'],
 				'post_content' => sprintf(
 					'<p>%s</p>\n<iframe src="%s" title="%s" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',
 					esc_html__( 'Video importato da XVideos.', 'pornovirtuale' ),
