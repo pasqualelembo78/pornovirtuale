@@ -3,11 +3,13 @@ defined( 'ABSPATH' ) || exit;
 
 class PV_Search_Importer {
 	const OPTION = 'pv_search_import';
+	const QUEUE_OPTION = 'pv_search_import_queue';
+	const CRON_HOOK = 'pv_search_import_batch';
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'handle_actions' ) );
-		add_action( 'wp_ajax_pv_search_import_test', array( __CLASS__, 'ajax_test' ) );
+		add_action( self::CRON_HOOK, array( __CLASS__, 'run_batch' ) );
 	}
 
 	public static function defaults() {
@@ -42,6 +44,17 @@ class PV_Search_Importer {
 			update_option( self::OPTION, self::defaults() );
 			add_settings_error( 'pv_search_import', 'saved', __( 'Impostazioni salvate.', 'pornovirtuale' ), 'updated' );
 		}
+		if ( isset( $_POST['pv_search_import_stop'] ) ) {
+			check_admin_referer( 'pv_search_import_stop' );
+			wp_clear_scheduled_hook( self::CRON_HOOK );
+			$queue = get_option( self::QUEUE_OPTION, array() );
+			if ( is_array( $queue ) && ! empty( $queue ) ) {
+				$queue['status'] = 'paused';
+				update_option( self::QUEUE_OPTION, $queue, false );
+			}
+			wp_safe_redirect( add_query_arg( 'page', 'pv-search-import', admin_url( 'admin.php' ) ) );
+			exit;
+		}
 		if ( ! isset( $_POST['pv_search_import_run'] ) ) {
 			return;
 		}
@@ -49,7 +62,7 @@ class PV_Search_Importer {
 		$query = sanitize_text_field( wp_unslash( $_POST['search_query'] ?? '' ) );
 		$site  = sanitize_key( wp_unslash( $_POST['search_site'] ?? 'xvideos' ) );
 		$cat   = sanitize_text_field( wp_unslash( $_POST['search_category'] ?? '' ) );
-		$limit = max( 1, min( 100, absint( $_POST['search_limit'] ?? 100 ) ) );
+		$limit = max( 1, min( 1000000, absint( $_POST['search_limit'] ?? 100 ) ) );
 
 		if ( '' === $query ) {
 			add_settings_error( 'pv_search_import', 'err', __( 'Inserisci una parola chiave.', 'pornovirtuale' ), 'error' );
@@ -64,44 +77,90 @@ class PV_Search_Importer {
 			return;
 		}
 
-		$imported = 0;
-		$duplicates = 0;
-		$errors = array();
-		$page = 0;
-		$max_pages = 10;
-
-		// Un solo invio avvia l'intera operazione: non vengono pianificati batch WP-Cron.
-		while ( $imported < $limit && $page < $max_pages ) {
-			$result = PV_Source_XVideos::search_and_import( $query, $limit - $imported, $cat, $page );
-			if ( 'error' === ( $result['status'] ?? '' ) ) {
-				$errors[] = sanitize_text_field( $result['message'] ?? __( 'Errore durante la ricerca.', 'pornovirtuale' ) );
-				break;
-			}
-			$batch_imported = (int) ( $result['imported'] ?? 0 );
-			$batch_duplicates = (int) ( $result['duplicates'] ?? 0 );
-			$scanned = (int) ( $result['scanned'] ?? 0 );
-			$imported += $batch_imported;
-			$duplicates += $batch_duplicates;
-			$page++;
-
-			if ( 0 === $scanned || ( 0 === $batch_imported && 0 === $batch_duplicates ) ) {
-				break;
-			}
-		}
-
-		$message = sprintf(
-			__( 'Operazione terminata: %1$d video importati e programmati, %2$d duplicati ignorati.', 'pornovirtuale' ),
-			$imported,
-			$duplicates
+		wp_clear_scheduled_hook( self::CRON_HOOK );
+		$queue = array(
+			'status' => 'running',
+			'query' => $query,
+			'site' => $site,
+			'category' => $cat,
+			'target' => $limit,
+			'imported' => 0,
+			'duplicates' => 0,
+			'errors' => 0,
+			'page' => 0,
+			'started_at' => current_time( 'mysql' ),
+			'updated_at' => current_time( 'mysql' ),
+			'message' => __( 'Importazione avviata; il primo blocco verrà elaborato automaticamente.', 'pornovirtuale' ),
 		);
-		if ( ! empty( $errors ) ) {
-			$message .= ' ' . implode( ' ', $errors );
-		} elseif ( $imported < $limit ) {
-			$message .= ' ' . sprintf( __( 'Risultati disponibili esauriti o insufficienti dopo %d pagine; obiettivo richiesto: %d.', 'pornovirtuale' ), $page, $limit );
+		update_option( self::QUEUE_OPTION, $queue, false );
+		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
+			wp_schedule_single_event( time() + 5, self::CRON_HOOK );
 		}
-		set_transient( 'pv_search_import_result', array( 'message' => $message, 'status' => empty( $errors ) ? 'success' : 'error' ), 300 );
 		wp_safe_redirect( add_query_arg( 'page', 'pv-search-import', admin_url( 'admin.php' ) ) );
 		exit;
+	}
+
+
+	/**
+	 * Elabora un massimo di 100 risultati per evento e pianifica il blocco successivo.
+	 */
+	public static function run_batch() {
+		$queue = get_option( self::QUEUE_OPTION, array() );
+		if ( ! is_array( $queue ) || 'running' !== ( $queue['status'] ?? '' ) ) {
+			return;
+		}
+		$remaining = max( 0, (int) $queue['target'] - (int) $queue['imported'] );
+		if ( 0 === $remaining ) {
+			$queue['status'] = 'completed';
+			$queue['message'] = __( 'Obiettivo raggiunto.', 'pornovirtuale' );
+			$queue['updated_at'] = current_time( 'mysql' );
+			update_option( self::QUEUE_OPTION, $queue, false );
+			return;
+		}
+		if ( ! class_exists( 'PV_Source_XVideos' ) ) {
+			$queue['status'] = 'error';
+			$queue['message'] = __( 'Modulo XVideos non disponibile; importazione interrotta.', 'pornovirtuale' );
+			update_option( self::QUEUE_OPTION, $queue, false );
+			return;
+		}
+
+		$batch_limit = min( 100, $remaining );
+		$result = PV_Source_XVideos::search_and_import( $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+		$queue['updated_at'] = current_time( 'mysql' );
+		if ( 'error' === ( $result['status'] ?? '' ) ) {
+			$queue['status'] = 'error';
+			$queue['message'] = sanitize_text_field( $result['message'] ?? __( 'Errore durante la ricerca.', 'pornovirtuale' ) );
+			$queue['errors'] = (int) $queue['errors'] + 1;
+			update_option( self::QUEUE_OPTION, $queue, false );
+			return;
+		}
+
+		$batch_imported = (int) ( $result['imported'] ?? 0 );
+		$batch_duplicates = (int) ( $result['duplicates'] ?? 0 );
+		$scanned = (int) ( $result['scanned'] ?? 0 );
+		$queue['imported'] = (int) $queue['imported'] + $batch_imported;
+		$queue['duplicates'] = (int) $queue['duplicates'] + $batch_duplicates;
+		$queue['page'] = (int) $queue['page'] + 1;
+
+		if ( 0 === $scanned || ( 0 === $batch_imported && 0 === $batch_duplicates ) ) {
+			$queue['status'] = 'completed';
+			$queue['message'] = __( 'Non risultano altri video disponibili per questa ricerca; operazione terminata.', 'pornovirtuale' );
+		} elseif ( (int) $queue['imported'] >= (int) $queue['target'] ) {
+			$queue['status'] = 'completed';
+			$queue['message'] = __( 'Obiettivo richiesto raggiunto.', 'pornovirtuale' );
+		} else {
+			$queue['status'] = 'running';
+			$queue['message'] = sprintf(
+				__( 'Elaborazione in corso: %1$d di %2$d video importati; %3$d duplicati ignorati.', 'pornovirtuale' ),
+				(int) $queue['imported'],
+				(int) $queue['target'],
+				(int) $queue['duplicates']
+			);
+		}
+		update_option( self::QUEUE_OPTION, $queue, false );
+		if ( 'running' === $queue['status'] && ! wp_next_scheduled( self::CRON_HOOK ) ) {
+			wp_schedule_single_event( time() + 20, self::CRON_HOOK );
+		}
 	}
 
 	public static function run_search( $args ) {
@@ -164,10 +223,15 @@ class PV_Search_Importer {
 		settings_errors( 'pv_search_import' );
 		$res = get_transient( 'pv_search_import_result' );
 		delete_transient( 'pv_search_import_result' );
+		$queue = get_option( self::QUEUE_OPTION, array() );
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Importa per ricerca', 'pornovirtuale' ); ?></h1>
-						<?php if ( $res ) : ?>
+						<?php if ( is_array( $queue ) && ! empty( $queue ) ) : ?>
+				<div class="notice notice-info"><p><strong><?php echo esc_html( sprintf( __( 'Stato: %1$s — importati %2$d di %3$d; duplicati ignorati: %4$d; pagina: %5$d. %6$s', 'pornovirtuale' ), $queue['status'] ?? '—', (int) ( $queue['imported'] ?? 0 ), (int) ( $queue['target'] ?? 0 ), (int) ( $queue['duplicates'] ?? 0 ), (int) ( $queue['page'] ?? 0 ), $queue['message'] ?? '' ) ); ?></strong></p>
+				<?php if ( 'running' === ( $queue['status'] ?? '' ) ) : ?><form method="post" action=""><?php wp_nonce_field( 'pv_search_import_stop' ); ?><?php submit_button( __( 'Interrompi importazione', 'pornovirtuale' ), 'secondary', 'pv_search_import_stop', false ); ?></form><?php endif; ?></div>
+			<?php endif; ?>
+			<?php if ( $res ) : ?>
 				<div class="notice notice-info"><p><strong><?php echo esc_html( $res['message'] ); ?></strong></p></div>
 			<?php endif; ?>
 			<form method="post" action="">
@@ -195,12 +259,12 @@ class PV_Search_Importer {
 					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Numero video', 'pornovirtuale' ); ?></th>
-						<td><input type="number" name="search_limit" value="100" min="1" max="100"><p class="description"><?php esc_html_e( 'Puoi importare fino a 100 video per operazione. La durata dipende dai risultati disponibili e dai limiti del server.', 'pornovirtuale' ); ?></p></td>
+						<td><input type="number" name="search_limit" value="100" min="1" max="1000000"><p class="description"><?php esc_html_e( 'Obiettivo totale da 1 a 1.000.000 di video. Il sistema elabora automaticamente blocchi di massimo 100 video; i risultati effettivamente disponibili dipendono dalla ricerca e dal sito sorgente.', 'pornovirtuale' ); ?></p></td>
 					</tr>
 				</table>
 				<?php submit_button( __( 'Avvia importazione automatica', 'pornovirtuale' ), 'primary', 'pv_search_import_run' ); ?>
 			</form>
-			<p class="description"><?php esc_html_e( 'I video nuovi vengono programmati a partire da 5 minuti da adesso, poi a intervalli di 5 minuti. I duplicati vengono ignorati. Premi Avvia una sola volta: l’importazione non viene suddivisa in eventi WP-Cron.', 'pornovirtuale' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Avvia una volta sola: l’importazione procede in blocchi automatici di massimo 100 risultati. I video nuovi vengono programmati a partire da 5 minuti da adesso, poi ogni 5 minuti. I duplicati vengono ignorati. La continuazione usa WP-Cron e richiede visite al sito, salvo configurazione di un cron di sistema.', 'pornovirtuale' ); ?></p>
 
 		</div>
 		<?php
