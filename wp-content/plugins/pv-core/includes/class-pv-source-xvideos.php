@@ -134,9 +134,12 @@ class PV_Source_XVideos {
 				$duplicates++;
 				continue;
 			}
+			$publish_at = self::next_publication_datetime();
 			$post_id = wp_insert_post( array(
 				'post_type' => 'video',
-				'post_status' => 'publish',
+				'post_status' => 'future',
+				'post_date' => $publish_at->format( 'Y-m-d H:i:s' ),
+				'post_date_gmt' => get_gmt_from_date( $publish_at->format( 'Y-m-d H:i:s' ) ),
 				'post_title' => wp_strip_all_tags( $item['title'] ),
 				'post_content' => sprintf(
 					'<p>%s</p>\n<iframe src="%s" title="%s" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',
@@ -172,7 +175,7 @@ class PV_Source_XVideos {
 			$imported++;
 		}
 		$message = sprintf(
-			__( 'Ricerca completata: %1$d video pubblicati, %2$d duplicati ignorati.', 'pornovirtuale' ),
+			__( 'Ricerca completata: %1$d video programmati (uno ogni 5 minuti), %2$d duplicati ignorati.', 'pornovirtuale' ),
 			$imported,
 			$duplicates
 		);
@@ -182,6 +185,34 @@ class PV_Source_XVideos {
 		$result['items'] = $items;
 		self::log_result( $query, $result );
 		return $result;
+	}
+
+	/**
+	 * Restituisce il prossimo slot di pubblicazione, distanziato di almeno 5 minuti
+	 * dall'ultimo video già programmato. Usa il fuso orario configurato in WordPress.
+	 */
+	private static function next_publication_datetime() {
+		$timezone = wp_timezone();
+		$next = current_datetime()->modify( '+5 minutes' );
+
+		$latest_ids = get_posts( array(
+			'post_type' => 'video',
+			'post_status' => array( 'future' ),
+			'posts_per_page' => 1,
+			'orderby' => 'date',
+			'order' => 'DESC',
+			'fields' => 'ids',
+			'no_found_rows' => true,
+		) );
+
+		if ( ! empty( $latest_ids ) ) {
+			$latest = get_post_datetime( (int) $latest_ids[0], 'date', 'local' );
+			if ( $latest instanceof DateTimeImmutable && $latest >= $next ) {
+				$next = $latest->setTimezone( $timezone )->modify( '+5 minutes' );
+			}
+		}
+
+		return $next->setTimezone( $timezone );
 	}
 
 	private static function result( $status, $message ) {
