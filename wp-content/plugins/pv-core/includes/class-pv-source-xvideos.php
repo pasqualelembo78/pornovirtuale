@@ -11,7 +11,7 @@ class PV_Source_XVideos {
 
 	public static function search_and_import( $query, $limit = 5, $category = '', $page = 0 ) {
 		$query = trim( sanitize_text_field( $query ) );
-		$limit = max( 1, min( 20, absint( $limit ) ) );
+		$limit = max( 1, min( 100, absint( $limit ) ) );
 		if ( '' === $query ) {
 			return self::result( 'error', __( 'Inserisci una parola chiave.', 'pornovirtuale' ) );
 		}
