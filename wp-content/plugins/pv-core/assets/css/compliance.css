@@ -1,0 +1,35 @@
+/* GDPR / AGE GATE overlay */
+.compliance-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.95);
+  display:flex; align-items:center; justify-content:center;
+  z-index:99999;
+  color:#fff;
+  font-family: Arial, sans-serif;
+  text-align:center;
+  padding: 1rem;
+}
+.compliance-box {
+  background:#111; padding:1.5rem; border-radius:12px;
+  max-width:520px; width:95%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  text-align:left;
+}
+.compliance-box h2 { margin:0 0 0.5rem 0; }
+.compliance-box p { margin:0.4rem 0; font-size:0.95rem; color:#ccc; }
+.compliance-actions,
+.compliance-cookies { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.8rem; }
+.compliance-actions .btn,
+.compliance-cookies .btn { padding:0.5rem 1rem; border-radius:8px; cursor:pointer; border:0; }
+.btn { background: #ff4d6d; color:#fff; font-weight:600; }
+.btn.ghost { background: transparent; border:1px solid rgba(255,255,255,0.08); color:#fff; }
+.compliance-footer { margin-top:0.8rem; font-size:0.85rem; color:#aaa; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+.compliance-footer a { color:#ffb3c0; text-decoration:underline; }
+#cookie-settings-panel { background:#0d0d0d; padding:0.6rem; border-radius:8px; margin-top:0.6rem; color:#ddd; }
+.blurred { filter: blur(5px) !important; pointer-events: none !important; user-select: none !important; }
+@media (max-width:520px) {
+  .compliance-box { padding:1rem; }
+  .compliance-actions { flex-direction:column; }
+}

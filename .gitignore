@@ -1,0 +1,8 @@
+wp-config.php
+wp-content/cache/
+wp-content/uploads/
+wp-content/ewww/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+wp-content/wp-cache-config.php
+.git/

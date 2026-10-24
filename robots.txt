@@ -1,0 +1,13 @@
+User-agent: *
+# Accesso consentito ai crawler alle pagine pubbliche
+Allow: /
+# Area riservata
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-json/
+# Pagine senza valore SEO (auth + supporto)
+Disallow: /login/
+Disallow: /registrati/
+Disallow: /supporto/
+# Sitemap
+Sitemap: https://pornovirtuale.com/wp-sitemap.xml
