@@ -160,7 +160,7 @@ class PV_Search_Importer {
 				</table>
 				<?php submit_button( __( 'Avvia importazione automatica', 'pornovirtuale' ), 'primary', 'pv_search_import_run' ); ?>
 			</form>
-			<p class="description"><?php esc_html_e( 'Tutti i video verranno importati come bozze. Nessuna pubblicazione automatica.', 'pornovirtuale' ); ?></p>
+			<p class="description"><?php esc_html_e( 'I video nuovi verranno programmati per la pubblicazione a partire da 5 minuti da adesso, poi a intervalli di 5 minuti. I duplicati vengono ignorati. La pubblicazione effettiva dipende dal corretto funzionamento della pianificazione WordPress/cron.', 'pornovirtuale' ); ?></p>
 		</div>
 		<?php
 	}
