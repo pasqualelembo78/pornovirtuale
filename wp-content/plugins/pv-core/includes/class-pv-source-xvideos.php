@@ -109,14 +109,26 @@ class PV_Source_XVideos {
 			if ( $imported >= $limit ) {
 				break;
 			}
+			// Deduplica per ID XVideos e per tutti gli URL noti, anche se cambia lo slug.
+			// Include anche il cestino: un video cancellato non viene reimportato automaticamente.
+			$video_path = '/video.' . $item['id'];
+			$embed_path = '/embedframe/' . $item['id'];
 			$existing = get_posts( array(
 				'post_type' => 'video',
-				'post_status' => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+				'post_status' => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
 				'posts_per_page' => 1,
 				'fields' => 'ids',
-				'meta_key' => '_pv_source_url',
-				'meta_value' => $item['url'],
 				'no_found_rows' => true,
+				'meta_query' => array(
+					'relation' => 'OR',
+					array( 'key' => '_pv_xvideos_id', 'value' => $item['id'], 'compare' => '=' ),
+					array( 'key' => '_pv_source_url', 'value' => $item['url'], 'compare' => '=' ),
+					array( 'key' => '_pv_external_url', 'value' => $item['url'], 'compare' => '=' ),
+					array( 'key' => '_pv_embed_url', 'value' => $item['embed'], 'compare' => '=' ),
+					array( 'key' => '_pv_source_url', 'value' => $video_path, 'compare' => 'LIKE' ),
+					array( 'key' => '_pv_external_url', 'value' => $video_path, 'compare' => 'LIKE' ),
+					array( 'key' => '_pv_embed_url', 'value' => $embed_path, 'compare' => 'LIKE' ),
+				),
 			) );
 			if ( ! empty( $existing ) ) {
 				$duplicates++;
@@ -138,6 +150,7 @@ class PV_Source_XVideos {
 				continue;
 			}
 			update_post_meta( $post_id, '_pv_source', self::SOURCE );
+			update_post_meta( $post_id, '_pv_xvideos_id', $item['id'] );
 			update_post_meta( $post_id, '_pv_source_url', $item['url'] );
 			update_post_meta( $post_id, '_pv_external_url', $item['url'] );
 			update_post_meta( $post_id, '_pv_embed_url', $item['embed'] );
