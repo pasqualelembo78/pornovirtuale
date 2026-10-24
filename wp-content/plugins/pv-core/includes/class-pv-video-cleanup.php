@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Strumenti amministrativi per la pulizia dei video.
  *
- * I contenuti vengono spostati nel cestino, mai eliminati definitivamente.
+ * I post video vengono eliminati definitivamente dopo conferma esplicita.
  */
 class PV_Video_Cleanup {
 	const PAGE_SLUG = 'pv-video-cleanup';
@@ -76,7 +76,7 @@ class PV_Video_Cleanup {
 
 		$moved = 0;
 		foreach ( $ids as $post_id ) {
-			if ( wp_trash_post( (int) $post_id ) ) {
+			if ( wp_delete_post( (int) $post_id, true ) ) {
 				$moved++;
 			}
 		}
@@ -85,14 +85,14 @@ class PV_Video_Cleanup {
 		if ( $remaining > 0 ) {
 			$message = sprintf(
 				/* translators: 1: videos moved to trash, 2: videos remaining */
-				__( 'Spostati nel cestino %1$d video. Ne restano %2$d: premi nuovamente il pulsante per continuare con il lotto successivo.', 'pornovirtuale' ),
+				__( 'Eliminati definitivamente %1$d video. Ne restano %2$d: premi nuovamente il pulsante per continuare con il lotto successivo.', 'pornovirtuale' ),
 				$moved,
 				$remaining
 			);
 		} else {
 			$message = sprintf(
 				/* translators: %d: videos moved to trash */
-				__( 'Pulizia completata: %d video spostati nel cestino. Puoi ripristinarli da Video > Cestino.', 'pornovirtuale' ),
+				__( 'Pulizia completata: %d video eliminati definitivamente. Questa operazione non è reversibile.', 'pornovirtuale' ),
 				$moved
 			);
 		}
@@ -131,13 +131,13 @@ class PV_Video_Cleanup {
 				<p><strong><?php esc_html_e( 'Attenzione: questa operazione riguarda tutti i post del tipo “video”, non soltanto quelli importati da XVideos.', 'pornovirtuale' ); ?></strong></p>
 
 				<?php if ( $total > 0 ) : ?>
-					<form method="post" action="" onsubmit="return confirm('Confermi di spostare nel cestino fino a 100 video?');">
+					<form method="post" action="" onsubmit="return confirm('ATTENZIONE: confermi di eliminare DEFINITIVAMENTE fino a 100 video? Questa operazione non è reversibile.');">
 						<?php wp_nonce_field( 'pv_video_cleanup_run' ); ?>
 						<p>
 							<label for="pv_video_cleanup_confirm"><?php esc_html_e( 'Per confermare, scrivi esattamente ELIMINA VIDEO:', 'pornovirtuale' ); ?></label><br>
 							<input type="text" id="pv_video_cleanup_confirm" name="pv_video_cleanup_confirm" class="regular-text" required autocomplete="off">
 						</p>
-						<?php submit_button( __( 'Sposta i video nel cestino', 'pornovirtuale' ), 'delete', 'pv_video_cleanup_run' ); ?>
+						<?php submit_button( __( 'Elimina definitivamente i video', 'pornovirtuale' ), 'delete', 'pv_video_cleanup_run' ); ?>
 					</form>
 				<?php else : ?>
 					<p><strong><?php esc_html_e( 'Non ci sono video da pulire.', 'pornovirtuale' ); ?></strong></p>
