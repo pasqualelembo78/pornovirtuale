@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Ricerca pubblica XVideos e importazione dei risultati come bozze.
+ * Ricerca pubblica XVideos e pubblicazione dei risultati importati.
  *
  * Nota: non aggira CAPTCHA, login, rate limit o altre misure di accesso.
  */
@@ -124,11 +124,11 @@ class PV_Source_XVideos {
 			}
 			$post_id = wp_insert_post( array(
 				'post_type' => 'video',
-				'post_status' => 'draft',
+				'post_status' => 'publish',
 				'post_title' => wp_strip_all_tags( $item['title'] ),
 				'post_content' => sprintf(
 					'<p>%s</p>\n<iframe src="%s" title="%s" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',
-					esc_html__( 'Video importato da XVideos. Verifica titolo, contenuto e autorizzazioni prima della pubblicazione.', 'pornovirtuale' ),
+					esc_html__( 'Video importato da XVideos.', 'pornovirtuale' ),
 					esc_url( $item['embed'] ),
 					esc_attr( $item['title'] )
 				),
@@ -159,7 +159,7 @@ class PV_Source_XVideos {
 			$imported++;
 		}
 		$message = sprintf(
-			__( 'Ricerca completata: %1$d bozze create, %2$d duplicati ignorati.', 'pornovirtuale' ),
+			__( 'Ricerca completata: %1$d video pubblicati, %2$d duplicati ignorati.', 'pornovirtuale' ),
 			$imported,
 			$duplicates
 		);
