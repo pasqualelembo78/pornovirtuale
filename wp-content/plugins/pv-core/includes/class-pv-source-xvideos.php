@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 class PV_Source_XVideos {
 	const SOURCE = 'xvideos';
 
-	public static function search_and_import( $query, $limit = 5, $category = '' ) {
+	public static function search_and_import( $query, $limit = 5, $category = '', $page = 0 ) {
 		$query = trim( sanitize_text_field( $query ) );
 		$limit = max( 1, min( 20, absint( $limit ) ) );
 		if ( '' === $query ) {
 			return self::result( 'error', __( 'Inserisci una parola chiave.', 'pornovirtuale' ) );
 		}
 
-		$url = add_query_arg( 'k', $query, 'https://www.xvideos.com/' );
+		$url = add_query_arg( array( 'k' => $query, 'p' => max( 0, absint( $page ) ) ), 'https://www.xvideos.com/' );
 		$response = wp_remote_get( $url, array(
 			'timeout' => 20,
 			'redirection' => 3,
@@ -182,6 +182,7 @@ class PV_Source_XVideos {
 		$result = self::result( 'success', $message );
 		$result['imported'] = $imported;
 		$result['duplicates'] = $duplicates;
+		$result['scanned'] = count( $found );
 		$result['items'] = $items;
 		self::log_result( $query, $result );
 		return $result;
@@ -216,7 +217,7 @@ class PV_Source_XVideos {
 	}
 
 	private static function result( $status, $message ) {
-		$result = array( 'status' => $status, 'message' => $message, 'imported' => 0, 'items' => array() );
+		$result = array( 'status' => $status, 'message' => $message, 'imported' => 0, 'duplicates' => 0, 'scanned' => 0, 'items' => array() );
 		self::log_result( '', $result );
 		return $result;
 	}
