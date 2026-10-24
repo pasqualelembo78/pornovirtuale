@@ -63,27 +63,55 @@ class PV_Search_Importer {
 
 	public static function run_search( $args ) {
 		$args = wp_parse_args( $args, array( 'query' => '', 'site' => 'xvideos', 'category' => '', 'limit' => 5 ) );
-		
-		// Importazione manuale sicura: crea post in bozza solo con URL forniti
-		// Non fa scraping automatico per evitare violazione termini
-		$results = array(
-			'status' => 'info',
-			'message' => __( 'Funzionalità pronta. Per motivi di sicurezza e rispetto dei termini d\'uso, non eseguo scraping automatico dei siti. Usa invece l\'importazione per URL/CSV oppure fornisci un feed ufficiale autorizzato.', 'pornovirtuale' ),
-			'imported' => 0,
-			'items' => array(),
-		);
-		
+		$query = sanitize_text_field( $args['query'] );
+		$site  = sanitize_key( $args['site'] );
+		$limit = max( 1, min( 20, absint( $args['limit'] ) ) );
+		$cat   = sanitize_text_field( $args['category'] );
+
+		if ( 'xvideos' !== $site ) {
+			return array(
+				'status'     => 'error',
+				'message'    => __( 'In questa versione è attiva la ricerca XVideos. Gli altri provider non sono ancora collegati.', 'pornovirtuale' ),
+				'imported'   => 0,
+				'duplicates' => 0,
+				'errors'     => 1,
+				'items'      => array(),
+			);
+		}
+
+		if ( ! class_exists( 'PV_Source_XVideos' ) ) {
+			return array(
+				'status'     => 'error',
+				'message'    => __( 'Classe XVideos non caricata. Verifica il file class-pv-source-xvideos.php e il require_once in pv-core.php.', 'pornovirtuale' ),
+				'imported'   => 0,
+				'duplicates' => 0,
+				'errors'     => 1,
+				'items'      => array(),
+			);
+		}
+
+		$res = PV_Source_XVideos::search_and_import( $query, $limit, $cat );
+
 		$log = get_option( PV_Automation::LOG_OPTION, array() );
 		if ( ! is_array( $log ) ) {
 			$log = array();
 		}
-		array_unshift( $log, array( 'time' => current_time( 'mysql' ), 'manual' => true, 'results' => array( 'type' => 'search_blocked', 'query' => $args['query'], 'site' => $args['site'] ) ) );
-		if ( count( $log ) > 20 ) {
-			$log = array_slice( $log, 0, 20 );
-		}
+		array_unshift( $log, array(
+			'time'   => current_time( 'mysql' ),
+			'manual' => true,
+			'results' => array(
+				'type'       => 'xvideos_keyword_import',
+				'query'      => $query,
+				'site'       => $site,
+				'imported'   => (int) ( $res['imported'] ?? 0 ),
+				'duplicates' => (int) ( $res['duplicates'] ?? 0 ),
+				'errors'     => (int) ( $res['errors'] ?? 0 ),
+			),
+		) );
+		$log = array_slice( $log, 0, 20 );
 		update_option( PV_Automation::LOG_OPTION, $log, false );
-		
-		return $results;
+
+		return $res;
 	}
 
 	public static function render_page() {
