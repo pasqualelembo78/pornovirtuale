@@ -228,8 +228,25 @@ class PV_Search_Importer {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Importa per ricerca', 'pornovirtuale' ); ?></h1>
 			<?php if ( is_array( $queue ) && ! empty( $queue ) ) : ?>
-				<div class="notice notice-info"><p><strong><?php echo esc_html( sprintf( __( 'Stato: %1$s — importati %2$d di %3$d; duplicati ignorati: %4$d; pagina: %5$d. %6$s', 'pornovirtuale' ), $queue['status'] ?? '—', (int) ( $queue['imported'] ?? 0 ), (int) ( $queue['target'] ?? 0 ), (int) ( $queue['duplicates'] ?? 0 ), (int) ( $queue['page'] ?? 0 ), $queue['message'] ?? '' ) ); ?></strong></p>
-				<?php if ( 'running' === ( $queue['status'] ?? '' ) ) : ?><form method="post" action=""><?php wp_nonce_field( 'pv_search_import_stop' ); ?><?php submit_button( __( 'Interrompi importazione', 'pornovirtuale' ), 'secondary', 'pv_search_import_stop', false ); ?></form><?php endif; ?></div>
+				<?php
+				$progress_target = max( 1, (int) ( $queue['target'] ?? 1 ) );
+				$progress_imported = max( 0, (int) ( $queue['imported'] ?? 0 ) );
+				$progress_percent = min( 100, (int) floor( 100 * $progress_imported / $progress_target ) );
+				$progress_status = (string) ( $queue['status'] ?? '' );
+				?>
+				<div class="notice notice-info">
+					<p><strong><?php echo esc_html( sprintf( __( 'Stato: %1$s — importati %2$d di %3$d; duplicati ignorati: %4$d; pagina: %5$d. %6$s', 'pornovirtuale' ), $queue['status'] ?? '—', $progress_imported, $progress_target, (int) ( $queue['duplicates'] ?? 0 ), (int) ( $queue['page'] ?? 0 ), $queue['message'] ?? '' ) ); ?></strong></p>
+					<div style="max-width:700px;margin:12px 0 16px">
+						<div style="height:22px;background:#e5e7eb;border-radius:4px;overflow:hidden;border:1px solid #c3c4c7" role="progressbar" aria-label="<?php esc_attr_e( 'Avanzamento importazione', 'pornovirtuale' ); ?>" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?php echo esc_attr( $progress_percent ); ?>">
+							<div style="height:100%;width:<?php echo esc_attr( $progress_percent ); ?>%;background:#2271b1;transition:width .3s ease"></div>
+						</div>
+						<p style="margin:5px 0"><strong><?php echo esc_html( $progress_percent . '%' ); ?></strong> — <?php echo esc_html( sprintf( __( '%1$d video importati su %2$d richiesti', 'pornovirtuale' ), $progress_imported, $progress_target ) ); ?></p>
+					</div>
+					<?php if ( 'running' === $progress_status ) : ?><form method="post" action=""><?php wp_nonce_field( 'pv_search_import_stop' ); ?><?php submit_button( __( 'Interrompi importazione', 'pornovirtuale' ), 'secondary', 'pv_search_import_stop', false ); ?></form><?php endif; ?>
+				</div>
+				<?php if ( 'running' === $progress_status ) : ?>
+					<script>(function(){window.setTimeout(function(){if(document.visibilityState!=='hidden'){window.location.reload();}},5000);}());</script>
+				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( $res ) : ?>
 				<div class="notice notice-info"><p><strong><?php echo esc_html( $res['message'] ); ?></strong></p></div>
