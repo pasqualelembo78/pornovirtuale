@@ -1,0 +1,17 @@
+# Una colazione fuori programma
+
+Il lunedì di Beatrice cominciò con una sveglia che non suonò e una riunione spostata in anticipo. Uscì di casa con i capelli ancora umidi, dimenticò il pranzo sul tavolo e si accorse, arrivata alla fermata, che il telefono aveva la batteria quasi scarica. Quando l'autobus passò davanti a lei senza fermarsi, decise che la giornata aveva già esaurito la sua quota di pazienza.
+
+Entrò nel bar all'angolo per comprare un caffè e riorganizzare i pensieri. Il locale era pieno, tranne un tavolino vicino alla vetrina dove un uomo stava leggendo il giornale cartaceo. Beatrice gli chiese se il posto fosse libero. Lui spostò la tazza e rispose che lo era, aggiungendo che il giornale era vecchio di due giorni e quindi non poteva garantire notizie fresche. Lei rise suo malgrado e si sedette.
+
+L'uomo si chiamava Michele, lavorava come cuoco in un ristorante poco distante e aveva finito il turno notturno. Beatrice era consulente informatica e quella mattina doveva presentare un progetto che le aveva richiesto settimane di lavoro. Si scambiarono poche frasi, poi tornarono ai rispettivi pensieri. Quando il barista portò per errore due brioche al tavolo, Michele propose di dividere quella in più invece di rimandarla indietro. Beatrice accettò, promettendo di non considerarla una colazione ufficiale.
+
+Il ritardo dell'autobus aveva reso impossibile arrivare in orario, così Beatrice scrisse ai colleghi e scoprì che la riunione era stata nuovamente spostata. Per la prima volta quella mattina, il respiro le tornò regolare. Michele la ascoltò mentre raccontava la sequenza degli imprevisti, senza minimizzarli. Poi le disse che anche lui aveva passato anni a trattare ogni contrattempo come un fallimento personale, finché non aveva capito che a volte la giornata non aveva bisogno di essere salvata: bastava smettere di combatterla.
+
+Beatrice guardò l'orologio. Aveva ancora mezz'ora prima di dover partire. Chiese a Michele quale fosse il piatto di cui andava più fiero. Lui descrisse una ricetta semplice, fatta di ingredienti comuni e tempi precisi, e parlò del piacere di cucinare per persone che tornavano perché si sentivano accolte. Lei gli raccontò che programmava sistemi complessi ma faticava a organizzare una serata libera senza riempirla di commissioni.
+
+Quando si alzarono, Michele le chiese se volesse passare dal ristorante una sera, quando non fosse di turno. Beatrice esitò solo un istante. Non era abituata ad accettare inviti da sconosciuti, ma non si sentiva sotto pressione. Gli disse che le avrebbe fatto piacere, a patto che lui non le servisse una porzione da degustazione minuscola. Michele promise una cena vera e le lasciò il numero su un tovagliolino pulito.
+
+La riunione andò meglio del previsto. Durante il pomeriggio, Beatrice si ritrovò a sorridere ripensando al bar e alla frase sul non dover salvare ogni giornata. Gli scrisse la sera stessa, proponendo il venerdì. La risposta arrivò subito: «Tengo da parte il tavolo vicino alla finestra».
+
+Il venerdì si presentò puntuale, con la sensazione insolita di non dover dimostrare nulla. Michele la accolse senza grembiule e senza fretta. La cena fu buona, la conversazione ancora migliore. Dopo il dolce uscirono a camminare lungo il viale illuminato. Quando lui le chiese se poteva baciarla, Beatrice sorrise e si avvicinò. Il lunedì era stato un disastro soltanto in apparenza: aveva deviato il percorso abbastanza da farle incontrare qualcuno che, altrimenti, non avrebbe mai conosciuto.
