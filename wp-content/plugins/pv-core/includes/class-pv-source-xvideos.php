@@ -37,7 +37,7 @@ class PV_Source_XVideos {
 		return sanitize_text_field( $title );
 	}
 
-	public static function search_and_import( $query, $limit = 5, $category = '', $page = 0 ) {
+	public static function search_and_import( $query, $limit = 5, $category = '', $page = 0, $tags = array() ) {
 		$query = trim( sanitize_text_field( $query ) );
 		$limit = max( 1, min( 100, absint( $limit ) ) );
 		if ( '' === $query ) {
@@ -204,6 +204,18 @@ class PV_Source_XVideos {
 					wp_set_object_terms( $post_id, array( $term_id ), 'pv_categoria', false );
 				}
 			}
+			if ( ! empty( $tags ) && taxonomy_exists( 'post_tag' ) ) {
+				$clean_tags = array();
+				foreach ( $tags as $t ) {
+					$t = sanitize_text_field( is_scalar( $t ) ? $t : '' );
+					if ( '' !== $t ) {
+						$clean_tags[] = $t;
+					}
+				}
+				if ( ! empty( $clean_tags ) ) {
+					wp_set_object_terms( $post_id, $clean_tags, 'post_tag', false );
+				}
+			}
 			$items[] = array( 'id' => $post_id, 'title' => $item['title'], 'url' => $item['url'] );
 			$imported++;
 		}
@@ -246,7 +258,39 @@ class PV_Source_XVideos {
 			}
 		}
 
+		$daily_limit = (int) ( get_option( 'pv_search_import', array() )['daily_limit'] ?? 2 );
+		if ( $daily_limit > 0 ) {
+			$today_count = self::get_today_publish_count();
+			if ( $today_count >= $daily_limit ) {
+				return current_datetime()->modify( '+1 day' )->setTimezone( $timezone );
+			}
+		}
+
 		return $next->setTimezone( $timezone );
+	}
+
+	/**
+	 * Conta i video programmati per oggi (future o publish).
+	 */
+	private static function get_today_publish_count() {
+		$now = current_time( 'mysql' );
+		$today = substr( $now, 0, 10 );
+		$ids = get_posts( array(
+			'post_type' => 'video',
+			'post_status' => array( 'future', 'publish' ),
+			'posts_per_page' => -1,
+			'fields' => 'ids',
+			'no_found_rows' => true,
+			'date_query' => array(
+				array(
+					'after'    => $today . ' 00:00:00',
+					'before'   => $today . ' 23:59:59',
+					'compare'  => '>=',
+					'relation' => 'OR',
+				),
+			),
+		) );
+		return count( (array) $ids );
 	}
 
 	private static function result( $status, $message ) {

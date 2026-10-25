@@ -21,6 +21,7 @@ class PV_Search_Importer {
 				'pornhub' => array( 'enabled' => 0 ),
 				'redtube' => array( 'enabled' => 0 ),
 			),
+			'daily_limit' => 2,
 		);
 	}
 
@@ -41,7 +42,11 @@ class PV_Search_Importer {
 		}
 		if ( isset( $_POST['pv_search_import_save'] ) ) {
 			check_admin_referer( 'pv_search_import_save' );
-			update_option( self::OPTION, self::defaults() );
+			$saved = self::defaults();
+			if ( isset( $_POST['daily_limit'] ) ) {
+				$saved['daily_limit'] = max( 0, min( 1000000, absint( $_POST['daily_limit'] ) ) );
+			}
+			update_option( self::OPTION, $saved );
 			add_settings_error( 'pv_search_import', 'saved', __( 'Impostazioni salvate.', 'pornovirtuale' ), 'updated' );
 		}
 		if ( isset( $_POST['pv_search_import_stop'] ) ) {
@@ -91,6 +96,10 @@ class PV_Search_Importer {
 			'duplicates' => 0,
 			'errors' => 0,
 			'page' => 0,
+			'daily_limit' => max( 0, (int) ( get_option( self::OPTION, self::defaults() )['daily_limit'] ?? 2 ) ),
+			'published_today' => 0,
+			'published' => array(),
+			'tags' => self::parse_tags( isset( $_POST['search_tags'] ) ? wp_unslash( $_POST['search_tags'] ) : '' ),
 			'started_at' => current_time( 'mysql' ),
 			'updated_at' => current_time( 'mysql' ),
 			'message' => __( 'Importazione avviata; il primo blocco verrà elaborato automaticamente.', 'pornovirtuale' ),
@@ -101,6 +110,25 @@ class PV_Search_Importer {
 		}
 		wp_safe_redirect( add_query_arg( 'page', 'pv-search-import', admin_url( 'admin.php' ) ) );
 		exit;
+	}
+
+	/**
+	 * Converte una lista di tag in array di stringhe pulite.
+	 */
+	public static function parse_tags( $raw ) {
+		$raw = sanitize_text_field( (string) $raw );
+		if ( '' === $raw ) {
+			return array();
+		}
+		$parts = preg_split( '/[\s,;\|]+/', $raw );
+		$tags = array();
+		foreach ( $parts as $p ) {
+			$t = sanitize_text_field( trim( $p ) );
+			if ( '' !== $t ) {
+				$tags[] = $t;
+			}
+		}
+		return array_values( array_unique( $tags ) );
 	}
 
 	/**
@@ -119,6 +147,17 @@ class PV_Search_Importer {
 			update_option( self::QUEUE_OPTION, $queue, false );
 			return;
 		}
+		$daily_limit = max( 0, (int) ( $queue['daily_limit'] ?? 2 ) );
+		if ( 0 !== $daily_limit ) {
+			$today_published = self::get_today_published();
+			if ( $today_published >= $daily_limit ) {
+				$queue['status'] = 'completed';
+				$queue['message'] = sprintf( __( 'Limite giornaliero di %1$d video raggiunto. Riprovo a partire da domani.', 'pornovirtuale' ), $daily_limit );
+				$queue['updated_at'] = current_time( 'mysql' );
+				update_option( self::QUEUE_OPTION, $queue, false );
+				return;
+			}
+		}
 		$sites = isset( $queue['sites'] ) && is_array( $queue['sites'] ) ? array_values( $queue['sites'] ) : array( $queue['site'] ?? 'xvideos' );
 		$site_index = max( 0, (int) ( $queue['site_index'] ?? 0 ) );
 		if ( ! isset( $sites[ $site_index ] ) ) {
@@ -131,9 +170,9 @@ class PV_Search_Importer {
 		$site = sanitize_key( $sites[ $site_index ] );
 		$batch_limit = min( 100, $remaining );
 		if ( 'xvideos' === $site ) {
-			$result = PV_Source_XVideos::search_and_import( $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+			$result = PV_Source_XVideos::search_and_import( $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'], (array) self::parse_tags( isset( $queue['tags'] ) ? implode( ',', (array) $queue['tags'] ) : '' ) );
 		} else {
-			$result = PV_Source_Multi::search_and_import( $site, $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+			$result = PV_Source_Multi::search_and_import( $site, $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'], (array) self::parse_tags( isset( $queue['tags'] ) ? implode( ',', (array) $queue['tags'] ) : '' ) );
 		}
 		$queue['updated_at'] = current_time( 'mysql' );
 		if ( in_array( ( $result['status'] ?? '' ), array( 'error', 'empty' ), true ) ) {
@@ -184,11 +223,12 @@ class PV_Search_Importer {
 	}
 
 	public static function run_search( $args ) {
-		$args = wp_parse_args( $args, array( 'query' => '', 'site' => 'xvideos', 'category' => '', 'limit' => 5 ) );
+		$args = wp_parse_args( $args, array( 'query' => '', 'site' => 'xvideos', 'category' => '', 'limit' => 5, 'tags' => array() ) );
 		$query = sanitize_text_field( $args['query'] );
 		$site  = sanitize_key( $args['site'] );
 		$limit = max( 1, min( 100, absint( $args['limit'] ) ) );
 		$cat   = sanitize_text_field( $args['category'] );
+		$tags  = is_array( $args['tags'] ) ? $args['tags'] : array();
 
 		if ( 'xvideos' !== $site ) {
 			return array(
@@ -212,7 +252,7 @@ class PV_Search_Importer {
 			);
 		}
 
-		$res = PV_Source_XVideos::search_and_import( $query, $limit, $cat );
+		$res = PV_Source_XVideos::search_and_import( $query, $limit, $cat, 0, (array) $tags );
 
 		$log = get_option( PV_Automation::LOG_OPTION, array() );
 		if ( ! is_array( $log ) ) {
@@ -297,6 +337,14 @@ class PV_Search_Importer {
 						<th scope="row"><?php esc_html_e( 'Numero video', 'pornovirtuale' ); ?></th>
 						<td><input type="number" name="search_limit" value="100" min="1" max="1000000"><p class="description"><?php esc_html_e( 'Obiettivo totale da 1 a 1.000.000 di video. Il sistema elabora automaticamente blocchi di massimo 100 video; i risultati effettivamente disponibili dipendono dalla ricerca e dal sito sorgente.', 'pornovirtuale' ); ?></p></td>
 					</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Tag', 'pornovirtuale' ); ?></th>
+							<td><input type="text" name="search_tags" class="regular-text" value="<?php echo esc_attr( isset( $_POST['search_tags'] ) ? sanitize_text_field( wp_unslash( $_POST['search_tags'] ) ) : '' ); ?>" placeholder="es. vr, milf, webcam"><p class="description"><?php esc_html_e( 'Tag separati da virgola da associare ai video importati. Se vuoto, i tag vengono derivati dalla query di ricerca.', 'pornovirtuale' ); ?></p></td>
+						</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Video giornalieri', 'pornovirtuale' ); ?></th>
+						<td><input type="number" name="daily_limit" value="<?php echo esc_attr( (int) ( get_option( self::OPTION, self::defaults() )['daily_limit'] ?? 2 ) ); ?>" min="0" max="1000000"><p class="description"><?php esc_html_e( 'Quanti video pubblicare al giorno. Lo spalma automaticamente gli orari di pubblicazione durante la giornata (mai due video nello stesso orario).', 'pornovirtuale' ); ?></p></td>
+					</tr>
 				</table>
 				<?php submit_button( __( 'Avvia importazione automatica', 'pornovirtuale' ), 'primary', 'pv_search_import_run' ); ?>
 			</form>
@@ -304,5 +352,30 @@ class PV_Search_Importer {
 		</div>
 		<?php
 	}
+
+	/**
+	 * Conta quanti video sono gia stati programmati per oggi.
+	 */
+	public static function get_today_published() {
+		$now = current_time( 'mysql' );
+		$today = substr( $now, 0, 10 );
+		$published = get_posts( array(
+			'post_type' => 'video',
+			'post_status' => array( 'future', 'publish' ),
+			'posts_per_page' => -1,
+			'fields' => 'ids',
+			'no_found_rows' => true,
+			'date_query' => array(
+				array(
+					'after'    => $today . ' 00:00:00',
+					'before'   => $today . ' 23:59:59',
+					'compare'  => '>=',
+					'relation' => 'OR',
+				),
+			),
+		) );
+		return count( (array) $published );
+	}
 }
+
 PV_Search_Importer::init();
