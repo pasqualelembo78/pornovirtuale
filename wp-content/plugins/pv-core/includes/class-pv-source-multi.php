@@ -76,7 +76,12 @@ class PV_Source_Multi {
 		if ( $nodes ) {
 			foreach ( $nodes as $node ) {
 				$href = html_entity_decode( trim( $node->getAttribute( 'href' ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-				if ( ! preg_match( $c['pattern'], $href, $m ) ) {
+				$match_href = $href;
+				if ( 0 === strpos( $match_href, 'http' ) ) {
+					$parts = wp_parse_url( $match_href );
+					$match_href = ( $parts['path'] ?? '/' ) . ( isset( $parts['query'] ) ? '?' . $parts['query'] : '' );
+				}
+				if ( ! preg_match( $c['pattern'], $match_href, $m ) ) {
 					continue;
 				}
 				$id = $m[1];
