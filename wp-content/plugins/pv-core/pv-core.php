@@ -51,6 +51,7 @@ require_once PV_CORE_DIR . 'includes/class-pv-importer.php';
 require_once PV_CORE_DIR . 'includes/class-pv-automation.php';
 require_once PV_CORE_DIR . 'includes/class-pv-dashboard.php';
 require_once PV_CORE_DIR . 'includes/class-pv-source-xvideos.php';
+require_once PV_CORE_DIR . 'includes/class-pv-source-multi.php';
 require_once PV_CORE_DIR . 'includes/class-pv-search-importer.php';
 require_once PV_CORE_DIR . 'includes/class-pv-bulk-importer.php';
 require_once PV_CORE_DIR . 'includes/class-pv-video-cleanup.php';
