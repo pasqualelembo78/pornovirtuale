@@ -1,0 +1,17 @@
+# La notte del festival
+
+Il festival occupava il parco ai margini della città, tra bancarelle di cibo, luci appese agli alberi e un palco che sembrava troppo piccolo per tutta la musica annunciata. Valentina era arrivata con due amiche, ma si era separata da loro nella folla mentre cercava una zona da cui vedere meglio il concerto. Aveva appena rinunciato a raggiungere il palco quando un ragazzo le indicò uno spazio libero vicino a una fila di lampadine colorate.
+
+Si chiamava Lorenzo e aveva un sorriso aperto, ma non invadente. Le chiese se conosceva il gruppo che stava per suonare; Valentina ammise di conoscere soltanto due canzoni. Lui le raccontò che li seguiva da anni e che il bello dei concerti era proprio scoprire un brano senza aspettative, circondati da persone che per qualche minuto cantavano la stessa cosa. Lei gli disse che era venuta soprattutto per uscire dalla routine, e Lorenzo rispose che allora era nel posto giusto.
+
+Quando la musica cominciò, la conversazione si interruppe naturalmente. Le luci si muovevano sopra la folla, la batteria faceva vibrare il terreno e il pubblico cantava anche le parole meno conosciute. Valentina si lasciò trascinare dal ritmo. Lorenzo ballava senza cercare di attirare l'attenzione, e quella libertà la fece sorridere. A metà concerto le porse una bottiglietta d'acqua e le chiese se volesse spostarsi verso una zona meno affollata. Lei accettò, grata che avesse pensato al suo comfort invece di presumere che dovesse restare lì.
+
+Dalla parte laterale del parco si vedeva il palco tra i rami. La musica arrivava più morbida, e potevano parlare senza urlare. Scoprirono di avere passioni diverse ma una curiosità simile: lui amava i documentari, lei fotografava insegne e finestre durante i viaggi. Lorenzo le mostrò alcune immagini scattate con una vecchia macchina analogica. Valentina apprezzò soprattutto quelle in cui non accadeva niente di spettacolare: una sedia fuori da una porta, un cane addormentato, un negozio chiuso al tramonto.
+
+Quando il concerto finì, la folla si disperse lentamente verso le uscite. Valentina ritrovò le amiche e spiegò che avrebbe raggiunto Lorenzo al chiosco per un ultimo saluto. Nessuno fece domande insistenti; una delle ragazze le rivolse soltanto un sorriso complice. Al chiosco ordinarono due panini e si sedettero su un muretto, ancora pieni dell'energia della musica.
+
+Lorenzo le chiese se le sarebbe piaciuto rivedersi in un momento più tranquillo. Valentina, che di solito diffidava delle conoscenze nate durante una serata, si accorse che non voleva liquidarlo come un ricordo del festival. Gli disse di sì, ma aggiunse che avrebbe scelto lei la prossima musica. Lui accettò la sfida con aria seria, come se stessero negoziando un contratto importante.
+
+Prima di separarsi, rimasero qualche secondo in silenzio. Valentina gli sfiorò la guancia e lo baciò, sorprendendo entrambi. Fu un gesto breve, seguito da un sorriso un po' incredulo. Non si promisero niente di straordinario. Si accordarono per una passeggiata e si scambiarono i numeri.
+
+Tornando verso casa, Valentina sentiva ancora il basso risuonarle nel petto. Il festival era stato bello, ma non era soltanto la musica a rendere speciale la serata. Era la sensazione di aver lasciato spazio a un incontro senza pretendere di sapere come sarebbe andata. A volte la spontaneità non consiste nel fare tutto d'impulso, ma nel riconoscere un'occasione e decidere di non voltarsi dall'altra parte.

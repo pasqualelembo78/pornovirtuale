@@ -1,0 +1,11 @@
+id,file,titolo_interno,tema,parole,stato,articolo_wordpress_id,slug_articolo
+001,storia-001.md,"Un incontro sotto la pioggia","incontro casuale",503,bozza,,
+002,storia-002.md,"La casa sul mare","vacanza e complicità",528,bozza,,
+003,storia-003.md,"L'ultima corsa del treno","viaggio e nuove conoscenze",515,bozza,,
+004,storia-004.md,"Il vicino del piano di sopra","quotidianità e attrazione",530,bozza,,
+005,storia-005.md,"Una sera in libreria","cultura e flirt",515,bozza,,
+006,storia-006.md,"Il laboratorio di ceramica","creatività e intimità",505,bozza,,
+007,storia-007.md,"Il giardino dopo il tramonto","vicinato e fiducia",528,bozza,,
+008,storia-008.md,"La fotografia ritrovata","memoria e seconde possibilità",531,bozza,,
+009,storia-009.md,"La notte del festival","musica e spontaneità",548,bozza,,
+010,storia-010.md,"Una colazione fuori programma","piccoli imprevisti",548,bozza,,
