@@ -60,7 +60,9 @@ class PV_Search_Importer {
 		}
 		check_admin_referer( 'pv_search_import_run' );
 		$query = sanitize_text_field( wp_unslash( $_POST['search_query'] ?? '' ) );
-		$site  = sanitize_key( wp_unslash( $_POST['search_site'] ?? 'xvideos' ) );
+		$sites_raw = isset( $_POST['search_sites'] ) ? (array) wp_unslash( $_POST['search_sites'] ) : array( 'xvideos' );
+		$allowed_sites = array( 'xvideos', 'youporn', 'pornhub', 'redtube' );
+		$sites = array_values( array_intersect( $allowed_sites, array_map( 'sanitize_key', $sites_raw ) ) );
 		$cat   = sanitize_text_field( wp_unslash( $_POST['search_category'] ?? '' ) );
 		$limit = max( 1, min( 1000000, absint( $_POST['search_limit'] ?? 100 ) ) );
 
@@ -68,12 +70,12 @@ class PV_Search_Importer {
 			add_settings_error( 'pv_search_import', 'err', __( 'Inserisci una parola chiave.', 'pornovirtuale' ), 'error' );
 			return;
 		}
-		if ( 'xvideos' !== $site ) {
-			add_settings_error( 'pv_search_import', 'err', __( 'In questa versione è attiva la ricerca XVideos; gli altri provider non sono collegati.', 'pornovirtuale' ), 'error' );
+		if ( empty( $sites ) ) {
+			add_settings_error( 'pv_search_import', 'err', __( 'Seleziona almeno un provider.', 'pornovirtuale' ), 'error' );
 			return;
 		}
-		if ( ! class_exists( 'PV_Source_XVideos' ) ) {
-			add_settings_error( 'pv_search_import', 'err', __( 'Modulo XVideos non disponibile.', 'pornovirtuale' ), 'error' );
+		if ( ! class_exists( 'PV_Source_XVideos' ) || ! class_exists( 'PV_Source_Multi' ) ) {
+			add_settings_error( 'pv_search_import', 'err', __( 'Uno o più moduli provider non sono disponibili.', 'pornovirtuale' ), 'error' );
 			return;
 		}
 
@@ -81,7 +83,8 @@ class PV_Search_Importer {
 		$queue = array(
 			'status' => 'running',
 			'query' => $query,
-			'site' => $site,
+			'sites' => $sites,
+			'site_index' => 0,
 			'category' => $cat,
 			'target' => $limit,
 			'imported' => 0,
@@ -116,21 +119,38 @@ class PV_Search_Importer {
 			update_option( self::QUEUE_OPTION, $queue, false );
 			return;
 		}
-		if ( ! class_exists( 'PV_Source_XVideos' ) ) {
-			$queue['status'] = 'error';
-			$queue['message'] = __( 'Modulo XVideos non disponibile; importazione interrotta.', 'pornovirtuale' );
+		$sites = isset( $queue['sites'] ) && is_array( $queue['sites'] ) ? array_values( $queue['sites'] ) : array( $queue['site'] ?? 'xvideos' );
+		$site_index = max( 0, (int) ( $queue['site_index'] ?? 0 ) );
+		if ( ! isset( $sites[ $site_index ] ) ) {
+			$queue['status'] = 'completed';
+			$queue['message'] = __( 'Tutti i provider selezionati sono stati provati; importazione terminata.', 'pornovirtuale' );
+			$queue['updated_at'] = current_time( 'mysql' );
 			update_option( self::QUEUE_OPTION, $queue, false );
 			return;
 		}
-
+		$site = sanitize_key( $sites[ $site_index ] );
 		$batch_limit = min( 100, $remaining );
-		$result = PV_Source_XVideos::search_and_import( $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+		if ( 'xvideos' === $site ) {
+			$result = PV_Source_XVideos::search_and_import( $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+		} else {
+			$result = PV_Source_Multi::search_and_import( $site, $queue['query'], $batch_limit, $queue['category'], (int) $queue['page'] );
+		}
 		$queue['updated_at'] = current_time( 'mysql' );
-		if ( 'error' === ( $result['status'] ?? '' ) ) {
-			$queue['status'] = 'error';
-			$queue['message'] = sanitize_text_field( $result['message'] ?? __( 'Errore durante la ricerca.', 'pornovirtuale' ) );
-			$queue['errors'] = (int) $queue['errors'] + 1;
+		if ( in_array( ( $result['status'] ?? '' ), array( 'error', 'empty' ), true ) ) {
+			$queue['errors'] = (int) $queue['errors'] + ( 'error' === $result['status'] ? 1 : 0 );
+			$queue['site_index'] = $site_index + 1;
+			$queue['page'] = 0;
+			if ( ! isset( $sites[ $queue['site_index'] ] ) ) {
+				$queue['status'] = 'completed';
+				$queue['message'] = sanitize_text_field( $result['message'] ?? __( 'Nessun altro provider disponibile.', 'pornovirtuale' ) );
+			} else {
+				$queue['status'] = 'running';
+				$queue['message'] = sprintf( __( '%1$s non ha fornito altri risultati. Passaggio a %2$s.', 'pornovirtuale' ), ucfirst( $site ), ucfirst( $sites[ $queue['site_index'] ] ) );
+			}
 			update_option( self::QUEUE_OPTION, $queue, false );
+			if ( 'running' === $queue['status'] && ! wp_next_scheduled( self::CRON_HOOK ) ) {
+				wp_schedule_single_event( time() + 3, self::CRON_HOOK );
+			}
 			return;
 		}
 
@@ -262,12 +282,11 @@ class PV_Search_Importer {
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Sito', 'pornovirtuale' ); ?></th>
 						<td>
-							<select name="search_site">
-								<option value="xvideos">XVideos</option>
-								<option value="youporn">YouPorn</option>
-								<option value="pornhub">Pornhub</option>
-								<option value="redtube">RedTube</option>
-							</select>
+							<label><input type="checkbox" name="search_sites[]" value="xvideos" checked> XVideos</label><br>
+							<label><input type="checkbox" name="search_sites[]" value="youporn" checked> YouPorn</label><br>
+							<label><input type="checkbox" name="search_sites[]" value="pornhub" checked> Pornhub</label><br>
+							<label><input type="checkbox" name="search_sites[]" value="redtube" checked> RedTube</label>
+							<p class="description"><?php esc_html_e( 'Seleziona più provider: vengono provati uno dopo l’altro. Se un provider fallisce o non restituisce risultati leggibili, l’importazione passa automaticamente al successivo.', 'pornovirtuale' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -281,7 +300,7 @@ class PV_Search_Importer {
 				</table>
 				<?php submit_button( __( 'Avvia importazione automatica', 'pornovirtuale' ), 'primary', 'pv_search_import_run' ); ?>
 			</form>
-			<p class="description"><?php esc_html_e( 'Avvia una volta sola: l’importazione procede in blocchi di massimo 100 risultati. I video nuovi vengono programmati a partire da 5 minuti da adesso, poi ogni 5 minuti. I duplicati vengono ignorati. La continuazione usa WP-Cron e richiede visite al sito, salvo configurazione di un cron di sistema.', 'pornovirtuale' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Avvia una volta sola: l’importazione procede in blocchi di massimo 100 risultati. I provider selezionati vengono provati uno dopo l’altro; se uno fallisce o non restituisce risultati leggibili, si passa al successivo. I video nuovi vengono programmati a partire da 5 minuti da adesso, poi ogni 5 minuti. I duplicati vengono ignorati. La continuazione usa WP-Cron e richiede visite al sito, salvo configurazione di un cron di sistema.', 'pornovirtuale' ); ?></p>
 		</div>
 		<?php
 	}
