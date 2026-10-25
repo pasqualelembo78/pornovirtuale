@@ -92,7 +92,7 @@ class PV_Video_Cleanup {
 				/* translators: 1: deleted videos, 2: items that could not be deleted */
 				__( 'Operazione terminata: %1$d video eliminati definitivamente. Elementi non eliminati: %2$d.', 'pornovirtuale' ),
 				(int) $state['deleted'],
-				max( 0, (int) $state['total'] - (int) $state['deleted']
+				max( 0, (int) $state['total'] - (int) $state['deleted'] )
 			);
 			set_transient( self::progress_key(), $state, 2 * HOUR_IN_SECONDS );
 			wp_send_json_success( $state );
