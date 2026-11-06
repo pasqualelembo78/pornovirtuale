@@ -28,9 +28,5 @@ Allow: /
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-json/
-# Pagine senza valore SEO (auth + supporto)
-Disallow: /login/
-Disallow: /registrati/
-Disallow: /supporto/
 # Sitemap
 Sitemap: https://pornovirtuale.com/sitemap_index.xml

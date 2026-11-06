@@ -337,7 +337,7 @@ add_filter( 'wpseo_stylesheet_url', 'pv_sitemap_stylesheet' );
  * non hanno valore di ricerca: fuori dal sitemap.
  */
 function pv_exclude_service_pages_from_sitemap( $ids ) {
-	$escludi = array( 3129, 312, 315, 316, 317, 3124 );
+	$escludi = array( 3129, 312, 315, 316, 317, 3124, 169, 171 );
 	$prodotti = wp_count_posts( 'product' );
 	if ( empty( $prodotti->publish ) ) {
 		$escludi[] = 314; // shop vuoto: torna in sitemap al primo prodotto
@@ -412,7 +412,7 @@ add_filter( 'wpseo_metadesc', 'pv_meta_description_fallback', 12 );
  * Pagine vuote o di servizio: noindex finché non hanno contenuto reale.
  */
 function pv_noindex_empty_pages( $robots ) {
-	if ( is_page( 3124 ) || is_page( 312 ) ) {
+	if ( is_page( 3124 ) || is_page( 312 ) || is_page( 169 ) || is_page( 171 ) ) {
 		$robots['index']  = 'noindex';
 		$robots['follow'] = 'follow';
 	}
