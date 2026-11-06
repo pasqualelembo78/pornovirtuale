@@ -149,6 +149,18 @@ $room_url = get_permalink();
 </section>
 <?php
 // Dati strutturati: la pagina è una collezione di personaggi + FAQ
+$lista_personaggi = array();
+foreach (array_slice($chars, 0, 20) as $c) {
+    if (empty($c['slug'])) {
+        continue;
+    }
+    $lista_personaggi[] = array(
+        '@type' => 'ListItem',
+        'position' => count($lista_personaggi) + 1,
+        'url' => trailingslashit($room_url) . $c['slug'] . '/',
+        'name' => $c['name'],
+    );
+}
 $schema = array(
     '@context' => 'https://schema.org',
     '@graph' => array(
@@ -159,6 +171,11 @@ $schema = array(
             'url' => get_permalink(),
             'isPartOf' => array('@type' => 'WebSite', 'name' => get_bloginfo('name'), 'url' => home_url('/')),
             'about' => array('@type' => 'Thing', 'name' => 'Chat erotica ' . $cat_meta['name']),
+            'mainEntity' => array(
+                '@type' => 'ItemList',
+                'numberOfItems' => count($lista_personaggi),
+                'itemListElement' => $lista_personaggi,
+            ),
         ),
         array(
             '@type' => 'FAQPage',
