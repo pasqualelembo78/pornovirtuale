@@ -29,7 +29,7 @@ while ( have_posts() ) :
 			<div style="display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:30px;align-items:start;">
 				<div>
 					<?php if ( has_post_thumbnail() ) : ?>
-						<?php the_post_thumbnail( 'pv-card' ); ?>
+						<?php the_post_thumbnail( 'pv-card', array( 'alt' => get_the_title() ) ); ?>
 					<?php endif; ?>
 					<?php if ( $pv_url ) : ?>
 						<a class="btn" style="margin-top:14px;width:100%;" href="<?php echo esc_url( $pv_url ); ?>" rel="nofollow sponsored noopener" target="_blank"><?php esc_html_e( 'Vai al profilo', 'pornovirtuale' ); ?></a>

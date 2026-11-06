@@ -297,3 +297,7 @@ button { font: inherit; }
 .pv-hidden { display: none !important; }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
 .blurred { filter: blur(6px) !important; pointer-events: none !important; user-select: none !important; }
+
+.site-footer__stanze { grid-column: 1 / -1; }
+.site-footer__stanze-list { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; }
+.site-footer__stanze-list a { font-size: 13px; }

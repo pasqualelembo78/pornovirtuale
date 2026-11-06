@@ -1,4 +1,3 @@
-<?php
 /**
  * Theme JS: menu mobile, header auto-hide, ricerca rapida.
  *

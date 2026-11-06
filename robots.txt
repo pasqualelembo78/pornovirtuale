@@ -1,3 +1,10 @@
+# Crawler Amazon / Alexa: accesso esplicito
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Amzn-SearchBot
+Allow: /
+
 User-agent: *
 # Accesso consentito ai crawler alle pagine pubbliche
 Allow: /
@@ -10,4 +17,4 @@ Disallow: /login/
 Disallow: /registrati/
 Disallow: /supporto/
 # Sitemap
-Sitemap: https://pornovirtuale.com/wp-sitemap.xml
+Sitemap: https://pornovirtuale.com/sitemap_index.xml

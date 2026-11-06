@@ -1,0 +1,41 @@
+# Pornovirtuale.com
+
+> Guida italiana al porno virtuale e alle cam VR: stanze live, video a 180 e 360 gradi, profili di modelli e guide pratiche. Contenuti per adulti (18+). Accesso gratuito dal browser o dal visore, senza installazione.
+
+Lingua: italiano (it-IT)
+Aggiornato: 2026-11-06
+
+## Sezioni principali
+
+- Stanze live VR: https://pornovirtuale.com/stanze-live/
+- Archivio stanze per categoria: https://pornovirtuale.com/stanze/
+- Catalogo video VR: https://pornovirtuale.com/video-vr/
+- Categorie: https://pornovirtuale.com/categorie/
+- Modelli e performer: https://pornovirtuale.com/modelli/
+- Blog, guide e tutorial: https://pornovirtuale.com/blog/
+- Area VIP e abbonamenti: https://pornovirtuale.com/vip/
+
+## Pagine informative
+
+- Chi siamo e criteri editoriali: https://pornovirtuale.com/chi-siamo/
+- Come funziona il sito: https://pornovirtuale.com/come-funziona/
+- Personaggi inventati: https://pornovirtuale.com/personaggi-inventati/
+- Privacy Policy: https://pornovirtuale.com/privacy/
+- Termini e Condizioni: https://pornovirtuale.com/termini/
+- DMCA e segnalazioni: https://pornovirtuale.com/dmca/
+
+## Pagine personaggio
+
+- Ogni scheda è raggiungibile da /stanza/<categoria>/<slug>/ e descrive un personaggio inventato: chi è, passioni, comportamento in chat, esempi di messaggi e FAQ.
+- I personaggi non corrispondono a persone reali; le schede servono a presentare le stanze di chat.
+- Sitemap dedicata: https://pornovirtuale.com/?aria_char_sitemap=top
+
+## Sitemap
+
+- Indice sitemap: https://pornovirtuale.com/sitemap_index.xml
+
+## Note per i crawler
+
+- Il contenuto è renderizzato lato server (HTML), senza dipendere da JavaScript.
+- I link affiliati usano rel="nofollow sponsored noopener".
+- I contenuti sono soggetti a licenza e citazione con link alla fonte.

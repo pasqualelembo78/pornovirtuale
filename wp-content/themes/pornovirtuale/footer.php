@@ -31,6 +31,9 @@ $pv_categorie = get_terms(
 					<li><a href="<?php echo esc_url( get_post_type_archive_link( 'video' ) ); ?>"><?php esc_html_e( 'Video VR', 'pornovirtuale' ); ?></a></li>
 					<li><a href="<?php echo esc_url( get_post_type_archive_link( 'modello' ) ); ?>"><?php esc_html_e( 'Modelli', 'pornovirtuale' ); ?></a></li>
 					<li><a href="<?php echo esc_url( pv_page_url( 'blog' ) ); ?>"><?php esc_html_e( 'Blog e guide', 'pornovirtuale' ); ?></a></li>
+					<li><a href="<?php echo esc_url( pv_page_url( 'come-funziona' ) ); ?>"><?php esc_html_e( 'Come funzionano le chat', 'pornovirtuale' ); ?></a></li>
+					<li><a href="<?php echo esc_url( pv_page_url( 'personaggi-inventati' ) ); ?>"><?php esc_html_e( 'Personaggi inventati', 'pornovirtuale' ); ?></a></li>
+					<li><a href="<?php echo esc_url( pv_page_url( 'chi-siamo' ) ); ?>"><?php esc_html_e( 'Chi siamo', 'pornovirtuale' ); ?></a></li>
 				</ul>
 			</div>
 
@@ -52,6 +55,29 @@ $pv_categorie = get_terms(
 					<li><a href="<?php echo esc_url( pv_page_url( 'termini' ) ); ?>"><?php esc_html_e( 'Termini e Condizioni', 'pornovirtuale' ); ?></a></li>
 					<li><a href="<?php echo esc_url( pv_page_url( 'supporto' ) ); ?>"><?php esc_html_e( 'Supporto e contatti', 'pornovirtuale' ); ?></a></li>
 					<li><a href="<?php echo esc_url( pv_page_url( 'dmca' ) ); ?>"><?php esc_html_e( 'DMCA / Copyright', 'pornovirtuale' ); ?></a></li>
+				</ul>
+			</div>
+
+			<div class="site-footer__stanze">
+				<h4><?php esc_html_e( 'Chat con i personaggi', 'pornovirtuale' ); ?></h4>
+				<ul class="site-footer__stanze-list">
+					<?php
+					$pv_stanze_chat = get_posts( array(
+						'post_type'      => 'stanza',
+						'posts_per_page' => 30,
+						'post_status'    => 'publish',
+						'orderby'        => 'title',
+						'order'          => 'ASC',
+						'fields'         => 'ids',
+					) );
+					foreach ( $pv_stanze_chat as $pv_stanza_id ) :
+						$pv_slug = get_post_field( 'post_name', $pv_stanza_id );
+						if ( 'vera' === $pv_slug ) {
+							continue;
+						}
+						?>
+						<li><a href="<?php echo esc_url( get_permalink( $pv_stanza_id ) ); ?>"><?php echo esc_html( get_the_title( $pv_stanza_id ) ); ?></a></li>
+					<?php endforeach; ?>
 				</ul>
 			</div>
 		</div>

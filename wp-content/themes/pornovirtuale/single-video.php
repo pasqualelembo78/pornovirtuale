@@ -30,6 +30,7 @@ while ( have_posts() ) :
 				<?php endif; ?>
 				<span><?php echo esc_html( get_the_date( 'j F Y' ) ); ?></span>
 			</div>
+			<?php pv_updated_date(); ?>
 		</div>
 	</section>
 
@@ -38,7 +39,20 @@ while ( have_posts() ) :
 			<?php echo do_shortcode( '[pv_video id="' . (int) $pv_id . '"]' ); ?>
 
 			<div class="pv-content" style="max-width:820px;margin-top:24px;">
-				<?php the_content(); ?>
+				<?php if ( '' === trim( (string) get_post_field( 'post_content', $pv_id ) ) ) : ?>
+					<p>
+						<?php echo esc_html( get_the_title() ); ?> è un video in realtà virtuale pubblicato su Pornovirtuale.com.
+						<?php if ( $pv_res ) : ?>La risoluzione indicata è <?php echo esc_html( $pv_res ); ?>. <?php endif; ?>
+						<?php if ( $pv_duration ) : ?>La durata è di <?php echo esc_html( $pv_duration ); ?>. <?php endif; ?>
+						Puoi aprirlo nel player qui sopra e scegliere la modalità di visione più adatta.
+					</p>
+					<p>
+						<?php echo $pv_vr ? 'Il contenuto è pensato per la visione immersiva a 180 o 360 gradi: indossa il visore e regola la posizione prima di iniziare.' : 'Il video si guarda comodamente anche da browser, su desktop o smartphone, senza installare nulla.'; ?>
+						Se ti interessa il genere, torna al catalogo video VR o alle categorie in fondo alla pagina per trovare contenuti simili.
+					</p>
+				<?php else : ?>
+					<?php the_content(); ?>
+				<?php endif; ?>
 			</div>
 
 			<?php
@@ -65,7 +79,7 @@ while ( have_posts() ) :
 							<article class="pv-card pv-card--video">
 								<a class="pv-card__media" href="<?php the_permalink(); ?>">
 									<?php if ( $pv_rpost ) : ?>
-										<img src="<?php echo esc_url( $pv_rpost ); ?>" alt="" loading="lazy" decoding="async">
+										<img src="<?php echo esc_url( $pv_rpost ); ?>" alt="<?php echo esc_attr( get_the_title( $pv_rid ) ); ?>" loading="lazy" decoding="async">
 									<?php else : ?>
 										<span class="pv-card__placeholder" aria-hidden="true"></span>
 									<?php endif; ?>

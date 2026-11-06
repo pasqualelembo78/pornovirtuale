@@ -7,6 +7,12 @@
 
 get_header();
 
+// Pagina di un singolo personaggio: /stanza/<categoria>/<slug>/
+if ( get_query_var( 'personaggio' ) && defined( 'ARIA_CHAT_PLUGIN_DIR' ) ) {
+	include ARIA_CHAT_PLUGIN_DIR . 'templates/character-page.php';
+	return;
+}
+
 while ( have_posts() ) :
 	the_post();
 
@@ -32,6 +38,7 @@ while ( have_posts() ) :
 				<?php endif; ?>
 				<span class="rta-label"><strong>18+</strong> <?php esc_html_e( 'Live', 'pornovirtuale' ); ?></span>
 			</div>
+			<?php pv_updated_date(); ?>
 		</div>
 	</section>
 
@@ -68,7 +75,7 @@ while ( have_posts() ) :
 			<?php endif; ?>
 
 			<?php if ( has_post_thumbnail() ) : ?>
-				<div style="margin-top:26px;"><?php the_post_thumbnail( 'pv-hero' ); ?></div>
+				<div style="margin-top:26px;"><?php the_post_thumbnail( 'pv-hero', array( 'alt' => get_the_title() ) ); ?></div>
 			<?php endif; ?>
 
 			<div class="pv-content" style="max-width:820px;">
