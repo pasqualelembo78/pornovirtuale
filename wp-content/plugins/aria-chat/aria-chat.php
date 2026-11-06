@@ -848,7 +848,7 @@ function aria_char_sitemap() {
 add_action('template_redirect', 'aria_char_sitemap', 1);
 
 /** Elenco URL delle pagine personaggio (per la sitemap). */
-function aria_char_sitemap_top($max = 6000) {
+function aria_char_sitemap_top($max = 8000) {
     $scelti = array();
     $per_categoria = max(2, (int) floor($max / 24));
     foreach ((array) glob(aria_grid_data_dir() . '/*.json') as $f) {
