@@ -444,6 +444,24 @@ function pv_blog_social_image() {
 }
 add_action( 'wp_head', 'pv_blog_social_image', 6 );
 
+/** Immagine social di riserva per le pagine senza immagine in evidenza. */
+function pv_default_social_image() {
+	if ( is_home() || is_singular( 'stanza' ) || has_post_thumbnail() ) {
+		return;
+	}
+	if ( ! ( is_singular() || is_category() || is_post_type_archive() ) ) {
+		return;
+	}
+	$url = content_url( '/uploads/brand/og-default.jpg' );
+	printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta property="og:image:width" content="1200" />' . "\n" );
+	printf( '<meta property="og:image:height" content="630" />' . "\n" );
+	printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr__( 'Pornovirtuale: cam VR, porno virtuale e stanze live', 'pornovirtuale' ) );
+	printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta name="twitter:image:alt" content="%s" />' . "\n", esc_attr__( 'Pornovirtuale: cam VR, porno virtuale e stanze live', 'pornovirtuale' ) );
+}
+add_action( 'wp_head', 'pv_default_social_image', 6 );
+
 /** La vecchia pagina "Articoli" non è più l'indice del blog. */
 function pv_redirect_old_posts_page() {
 	if ( is_page( 312 ) ) {
