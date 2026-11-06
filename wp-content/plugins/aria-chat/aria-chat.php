@@ -487,6 +487,36 @@ function aria_char_schema_date($data) {
 }
 add_filter('wpseo_schema_webpage', 'aria_char_schema_date', 20);
 
+/** Breadcrumb schema: aggiunge la scheda personaggio come ultimo livello. */
+function aria_char_schema_breadcrumb($graph) {
+    $c = aria_char_current();
+    if (!$c || !is_singular('stanza') || !is_array($graph)) {
+        return $graph;
+    }
+    $url = trailingslashit(get_permalink()) . $c['slug'] . '/';
+    foreach ($graph as $i => $nodo) {
+        $tipo = $nodo['@type'] ?? '';
+        if ($tipo !== 'BreadcrumbList' || empty($nodo['itemListElement'])) {
+            continue;
+        }
+        $voci = (array) $nodo['itemListElement'];
+        $ultima = end($voci);
+        if (!isset($ultima['item'])) {
+            $voci[key($voci)]['item'] = get_permalink();
+        }
+        $voci[] = array(
+            '@type'    => 'ListItem',
+            'position' => count($voci) + 1,
+            'name'     => 'Chat con ' . ($c['full_name'] ?? $c['name']),
+            'item'     => $url,
+        );
+        $graph[$i]['@id'] = $url . '#breadcrumb';
+        $graph[$i]['itemListElement'] = $voci;
+    }
+    return $graph;
+}
+add_filter('wpseo_schema_graph', 'aria_char_schema_breadcrumb', 20);
+
 /** Riduce una descrizione a un massimo, tagliando su parola intera. */
 function aria_char_trim_desc($testo, $max) {
     $testo = trim(preg_replace('/\s+/u', ' ', wp_strip_all_tags((string) $testo)));
