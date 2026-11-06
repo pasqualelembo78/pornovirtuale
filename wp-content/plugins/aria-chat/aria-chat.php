@@ -826,7 +826,9 @@ function aria_char_sitemap() {
         // L'indice del blog è la pagina dei post: Yoast la esclude dalla sitemap delle pagine.
         $blog_id = (int) get_option('page_for_posts');
         if ($blog_id) {
-            echo '  <url><loc>' . esc_url(get_permalink($blog_id)) . '</loc><lastmod>' . esc_html(gmdate('Y-m-d', (int) get_post_modified_time('U', true, $blog_id))) . '</lastmod></url>' . "\n";
+            echo '  <url><loc>' . esc_url(get_permalink($blog_id)) . '</loc><lastmod>' . esc_html(gmdate('Y-m-d', (int) get_post_modified_time('U', true, $blog_id))) . '</lastmod>';
+            echo '<image:image><image:loc>' . esc_url(content_url('/uploads/brand/og-blog.jpg')) . '</image:loc><image:title>Blog di Pornovirtuale</image:title></image:image>';
+            echo '</url>' . "\n";
         }
     }
     foreach (aria_grid_character_slugs($solo) as $voce) {
