@@ -5,6 +5,22 @@ Allow: /
 User-agent: Amzn-SearchBot
 Allow: /
 
+# Crawler AI / motori generativi
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
 User-agent: *
 # Accesso consentito ai crawler alle pagine pubbliche
 Allow: /
