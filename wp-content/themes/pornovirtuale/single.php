@@ -17,6 +17,11 @@ while ( have_posts() ) :
 			<h1 class="pv-page-title"><?php the_title(); ?></h1>
 			<div class="pv-entry-meta">
 				<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'j F Y' ) ); ?></time>
+				&middot;
+				<span>
+					<?php esc_html_e( 'di', 'pornovirtuale' ); ?>
+					<a rel="author" href="<?php echo esc_url( pv_page_url( 'chi-siamo' ) ); ?>"><?php echo esc_html( get_the_author() ); ?></a>
+				</span>
 			</div>
 			<?php pv_updated_date(); ?>
 		</div>
