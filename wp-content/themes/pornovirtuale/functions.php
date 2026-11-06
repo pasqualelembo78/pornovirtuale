@@ -460,7 +460,7 @@ function pv_default_social_image() {
 	if ( ! ( is_singular() || is_category() || is_post_type_archive() ) ) {
 		return;
 	}
-	$url = content_url( '/uploads/brand/og-default.jpg' );
+	$url = is_front_page() ? content_url( '/uploads/brand/og-home.jpg' ) : content_url( '/uploads/brand/og-default.jpg' );
 	printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $url ) );
 	printf( '<meta property="og:image:width" content="1200" />' . "\n" );
 	printf( '<meta property="og:image:height" content="630" />' . "\n" );
