@@ -193,6 +193,12 @@ function pv_organization_schema() {
 			'chat erotiche',
 			'realtà virtuale 180 e 360 gradi',
 		),
+		'contactPoint' => array(
+			'@type'             => 'ContactPoint',
+			'contactType'       => 'customer support',
+			'url'               => home_url( '/supporto/' ),
+			'availableLanguage' => 'Italian',
+		),
 	);
 
 	if ( $logo_url ) {
