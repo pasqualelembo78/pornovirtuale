@@ -376,6 +376,21 @@ function pv_noindex_empty_pages( $robots ) {
 }
 add_filter( 'wpseo_robots_array', 'pv_noindex_empty_pages', 20 );
 
+/** Immagine social dell'indice del blog. */
+function pv_blog_social_image() {
+	if ( ! is_home() ) {
+		return;
+	}
+	$url = content_url( '/uploads/brand/og-blog.jpg' );
+	printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta property="og:image:width" content="1200" />' . "\n" );
+	printf( '<meta property="og:image:height" content="630" />' . "\n" );
+	printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr__( 'Blog di Pornovirtuale: guide e novità su porno virtuale e VR', 'pornovirtuale' ) );
+	printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta name="twitter:image:alt" content="%s" />' . "\n", esc_attr__( 'Blog di Pornovirtuale: guide e novità su porno virtuale e VR', 'pornovirtuale' ) );
+}
+add_action( 'wp_head', 'pv_blog_social_image', 6 );
+
 /** La vecchia pagina "Articoli" non è più l'indice del blog. */
 function pv_redirect_old_posts_page() {
 	if ( is_page( 312 ) ) {
