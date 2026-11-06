@@ -329,7 +329,7 @@ function aria_characters_with_slug($categoria, $escludi = '', $quanti = 6, $solo
         }
         if ($solo_editoriali) {
             $file = '/opt/aria/backend/characters/editorial/' . $categoria . '/' . $c['slug'] . '.json';
-            if (!is_file($file)) {
+            if (!is_file($file) || filesize($file) <= 300) {
                 continue;
             }
         }
@@ -837,7 +837,7 @@ function aria_char_sitemap_top($max = 6000) {
             }
             $ts   = (int) filemtime($f);
             $ediz = '/opt/aria/backend/characters/editorial/' . $cat . '/' . $c['slug'] . '.json';
-            if (!is_file($ediz)) {
+            if (!is_file($ediz) || filesize($ediz) <= 300) {
                 continue; // in sitemap solo le pagine già editorializzate
             }
             $ts = max($ts, (int) filemtime($ediz));
@@ -873,7 +873,7 @@ function aria_grid_character_slugs($solo = '') {
             }
             $ts   = (int) filemtime($f);
             $ediz = '/opt/aria/backend/characters/editorial/' . $cat . '/' . $c['slug'] . '.json';
-            if (!is_file($ediz)) {
+            if (!is_file($ediz) || filesize($ediz) <= 300) {
                 continue; // in sitemap solo le pagine già editorializzate
             }
             $ts = max($ts, (int) filemtime($ediz));
