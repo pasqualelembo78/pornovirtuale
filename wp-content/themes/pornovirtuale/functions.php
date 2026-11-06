@@ -425,6 +425,14 @@ function pv_noindex_empty_pages( $robots ) {
 		}
 	}
 
+	if ( is_category() ) {
+		$termine = get_queried_object();
+		if ( $termine instanceof WP_Term && 0 === (int) $termine->count ) {
+			$robots['index']  = 'noindex';
+			$robots['follow'] = 'follow';
+		}
+	}
+
 	return $robots;
 }
 add_filter( 'wpseo_robots_array', 'pv_noindex_empty_pages', 20 );
