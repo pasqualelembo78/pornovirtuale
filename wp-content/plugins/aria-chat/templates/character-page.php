@@ -87,7 +87,13 @@ get_header();
                 'gender'      => $personaggio['gender_display'] ?? '',
                 'description' => aria_char_trim_desc($editorial['chi'] ?? ($personaggio['description'] ?? ''), 320),
                 'url'         => $base_url . $slug_personaggio . '/',
-                'knowsAbout'  => array_slice((array) ($personaggio['tags'] ?? array()), 0, 6),
+                'knowsLanguage' => 'it',
+                'knowsAbout'  => array_map(
+                    static function ($t) {
+                        return str_replace('-', ' ', (string) $t);
+                    },
+                    array_slice((array) ($personaggio['tags'] ?? array()), 0, 6)
+                ),
             ),
         );
         $person_img = $immagine_personaggio ?: get_the_post_thumbnail_url($stanza->ID, 'pv-hero');
