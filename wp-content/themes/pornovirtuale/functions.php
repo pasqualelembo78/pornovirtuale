@@ -214,6 +214,59 @@ function pv_organization_schema() {
 }
 add_action( 'wp_head', 'pv_organization_schema', 6 );
 
+/** Schema CollectionPage: aggiunge l'elenco alla pagina WebPage di Yoast. */
+function pv_collection_schema_graph( $graph ) {
+	if ( ! ( is_home() || is_post_type_archive( 'stanza' ) || is_post_type_archive( 'video' ) || is_category() ) ) {
+		return $graph;
+	}
+
+	global $wp_query;
+	if ( empty( $wp_query->posts ) || ! is_array( $graph ) ) {
+		return $graph;
+	}
+
+	$items = array();
+	foreach ( array_slice( $wp_query->posts, 0, 20 ) as $item ) {
+		$items[] = array(
+			'@type'    => 'ListItem',
+			'position' => count( $items ) + 1,
+			'url'      => get_permalink( $item ),
+			'name'     => get_the_title( $item ),
+		);
+	}
+
+	if ( is_home() ) {
+		$url = get_permalink( (int) get_option( 'page_for_posts' ) );
+	} elseif ( is_category() ) {
+		$url = get_category_link( get_queried_object_id() );
+	} else {
+		$url = get_post_type_archive_link( get_post_type() );
+	}
+
+	foreach ( $graph as $i => $node ) {
+		$id = (string) ( $node['@id'] ?? '' );
+		if ( '' === $id || 0 !== strpos( $id, $url ) ) {
+			continue;
+		}
+		$type    = $node['@type'] ?? '';
+		$tipi    = is_array( $type ) ? $type : array( $type );
+		$ammessi = array_intersect( $tipi, array( 'WebPage', 'CollectionPage' ) );
+		if ( ! $ammessi ) {
+			continue;
+		}
+		$graph[ $i ]['@type']      = 'CollectionPage';
+		$graph[ $i ]['mainEntity'] = array(
+			'@type'           => 'ItemList',
+			'numberOfItems'   => count( $items ),
+			'itemListElement' => $items,
+		);
+		break;
+	}
+
+	return $graph;
+}
+add_filter( 'wpseo_schema_graph', 'pv_collection_schema_graph', 20 );
+
 /** Schema AboutPage per la pagina redazione. */
 function pv_about_page_schema() {
 	if ( ! is_page( 'chi-siamo' ) ) {
