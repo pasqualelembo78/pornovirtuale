@@ -499,6 +499,12 @@ function pv_limit_seo_title( $title ) {
 		$title = $clean;
 	}
 
+	// Yoast aggiunge "Archives" agli archivi: in italiano è rumore.
+	if ( is_category() || is_tag() || is_author() || is_post_type_archive() ) {
+		$title = preg_replace( '/\s+Archives$/iu', '', $title );
+		$title = preg_replace( '/^Archivi\s+/iu', '', $title );
+	}
+
 	// Personaggi omonimi: aggiunge il cognome per non avere title identici.
 	// Lo slug del personaggio è l'ultimo segmento dell'URL, non il post_name.
 	if ( is_singular( 'stanza' ) ) {
@@ -631,6 +637,16 @@ function pv_menu_fallback() {
  * Pagine di archivio per i nuovi tipi di contenuto.
  */
 function pv_archive_titles( $title ) {
+	if ( is_category() ) {
+		return single_cat_title( '', false );
+	}
+	if ( is_tag() ) {
+		return single_tag_title( '', false );
+	}
+	if ( is_author() ) {
+		return get_the_author();
+	}
+
 	if ( is_post_type_archive( 'stanza' ) ) {
 		$title = __( 'Stanze live in realta virtuale', 'pornovirtuale' );
 	} elseif ( is_post_type_archive( 'video' ) ) {
