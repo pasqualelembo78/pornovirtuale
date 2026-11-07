@@ -59,4 +59,5 @@ Disallow: /wp-json/
 Sitemap: https://pornovirtuale.com/sitemap_index.xml
 # Indice per agenti AI
 # https://pornovirtuale.com/ai-index.json
+# https://pornovirtuale.com/ai-characters.json
 # https://pornovirtuale.com/llms.txt

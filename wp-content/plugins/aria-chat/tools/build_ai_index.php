@@ -1,6 +1,6 @@
 <?php
 /**
- * Costruisce /ai-index.json: indice compatto e machine-readable per crawler AI.
+ * Costruisce /ai-index.json e /ai-characters.json: indici machine-readable per crawler AI.
  * Uso: php build_ai_index.php
  */
 
@@ -9,22 +9,64 @@ require '/var/www/pornovirtuale/wp-load.php';
 $data_dir = '/opt/aria/backend/characters/data';
 $edit_dir = '/opt/aria/backend/characters/editorial';
 
-$totale = 0;
-$categorie = array();
+$totale      = 0;
+$categorie   = array();
+$personaggi  = array();
+$per_cat     = array();
+
 foreach ( glob( $data_dir . '/*.json' ) as $file ) {
 	if ( 'categories.json' === basename( $file ) ) {
 		continue;
 	}
-	$cat     = basename( $file, '.json' );
-	$righe   = json_decode( (string) file_get_contents( $file ), true ) ?: array();
+
+	$cat   = basename( $file, '.json' );
+	$righe = json_decode( (string) file_get_contents( $file ), true ) ?: array();
+
 	$totale += count( $righe );
 	$categorie[] = array(
 		'name' => ucfirst( str_replace( '-', ' ', $cat ) ),
 		'url'  => home_url( '/stanza/' . $cat . '/' ),
 	);
+
+	$pubblicati = 0;
+	foreach ( $righe as $riga ) {
+		$nome = isset( $riga['full_name'] ) ? $riga['full_name'] : ( $riga['name'] ?? '' );
+		if ( '' === $nome ) {
+			continue;
+		}
+
+		$slug = sanitize_title( $nome );
+		$json = $edit_dir . '/' . $cat . '/' . $slug . '.json';
+		if ( ! is_file( $json ) ) {
+			continue;
+		}
+
+		$editoriale = json_decode( (string) file_get_contents( $json ), true ) ?: array();
+		$aggiornato = $editoriale['generated_at'] ?? '';
+
+		$personaggi[] = array(
+			'name'     => $nome,
+			'url'      => home_url( '/stanza/' . $cat . '/' . $slug . '/' ),
+			'category' => str_replace( '-', ' ', $cat ),
+			'updated'  => $aggiornato,
+		);
+		++$pubblicati;
+	}
+
+	$per_cat[ $cat ] = array(
+		'total'     => count( $righe ),
+		'editorial' => $pubblicati,
+	);
 }
 
-$editoriali = count( glob( $edit_dir . '/*/*.json' ) );
+$editoriali = count( $personaggi );
+
+usort(
+	$personaggi,
+	static function ( $a, $b ) {
+		return strcmp( $a['category'] . $a['name'], $b['category'] . $b['name'] );
+	}
+);
 
 $pagine = array(
 	array( 'title' => 'Home', 'url' => home_url( '/' ), 'description' => 'Stanze live VR, video 180/360 e guida al porno virtuale.' ),
@@ -63,14 +105,28 @@ $indice = array(
 	),
 	'key_pages'   => $pagine,
 	'categories'  => $categorie,
+	'coverage'    => $per_cat,
 	'feeds'       => array(
-		'sitemap_index' => home_url( '/sitemap_index.xml' ),
-		'character_sitemap' => home_url( '/?aria_char_sitemap=top' ),
-		'llms'          => home_url( '/llms.txt' ),
-		'rss'           => home_url( '/feed/' ),
+		'sitemap_index'      => home_url( '/sitemap_index.xml' ),
+		'character_sitemap'  => home_url( '/?aria_char_sitemap=top' ),
+		'characters'         => home_url( '/ai-characters.json' ),
+		'llms'               => home_url( '/llms.txt' ),
+		'rss'                => home_url( '/feed/' ),
 	),
 );
 
 $json = wp_json_encode( $indice, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
 file_put_contents( '/var/www/pornovirtuale/ai-index.json', $json . "\n" );
-echo "ai-index.json aggiornato: {$editoriali}/{$totale} schede editoriali\n";
+
+$char_index = array(
+	'site'        => 'Pornovirtuale.com',
+	'language'    => 'it-IT',
+	'updated'     => gmdate( 'c' ),
+	'description' => 'Elenco delle schede personaggio pubblicate, con testo editoriale e FAQ. I personaggi sono inventati.',
+	'count'       => $editoriali,
+	'characters'  => $personaggi,
+);
+$json_char = wp_json_encode( $char_index, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+file_put_contents( '/var/www/pornovirtuale/ai-characters.json', $json_char . "\n" );
+
+echo "ai-index.json e ai-characters.json aggiornati: {$editoriali}/{$totale} schede editoriali\n";

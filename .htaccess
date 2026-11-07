@@ -136,6 +136,9 @@ RewriteRule . /index.php [L]
 <Files "ai-index.json">
 	Header set Cache-Control "public, max-age=3600"
 </Files>
+<Files "ai-characters.json">
+	Header set Cache-Control "public, max-age=3600"
+</Files>
 <Files "llms.txt">
 	Header set Cache-Control "public, max-age=3600"
 </Files>

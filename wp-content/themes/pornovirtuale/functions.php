@@ -174,6 +174,7 @@ add_action( 'init', 'pv_disable_emojis' );
 /** Scoperta dell'indice macchina per agenti AI. */
 function pv_ai_index_link() {
 	printf( '<link rel="alternate" type="application/json" href="%s" />' . "\n", esc_url( home_url( '/ai-index.json' ) ) );
+	printf( '<link rel="alternate" type="application/json" href="%s" />' . "\n", esc_url( home_url( '/ai-characters.json' ) ) );
 }
 add_action( 'wp_head', 'pv_ai_index_link', 5 );
 
