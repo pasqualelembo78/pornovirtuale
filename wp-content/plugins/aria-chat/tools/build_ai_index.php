@@ -126,7 +126,9 @@ $indice = array(
 );
 
 $json = wp_json_encode( $indice, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
-file_put_contents( '/var/www/pornovirtuale/ai-index.json', $json . "\n" );
+$tmp  = '/var/www/pornovirtuale/.ai-index.json.tmp';
+file_put_contents( $tmp, $json . "\n" );
+rename( $tmp, '/var/www/pornovirtuale/ai-index.json' );
 
 $char_index = array(
 	'site'        => 'Pornovirtuale.com',
@@ -137,6 +139,8 @@ $char_index = array(
 	'characters'  => $personaggi,
 );
 $json_char = wp_json_encode( $char_index, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-file_put_contents( '/var/www/pornovirtuale/ai-characters.json', $json_char . "\n" );
+$tmp_char  = '/var/www/pornovirtuale/.ai-characters.json.tmp';
+file_put_contents( $tmp_char, $json_char . "\n" );
+rename( $tmp_char, '/var/www/pornovirtuale/ai-characters.json' );
 
 echo "ai-index.json e ai-characters.json aggiornati: {$editoriali}/{$totale} schede editoriali\n";

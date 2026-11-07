@@ -72,5 +72,7 @@ foreach ( array_slice( $char_data, 0, 3 ) as $riga ) {
 	$out .= "---\n\n";
 }
 
-file_put_contents( '/var/www/pornovirtuale/llms-full.txt', $out );
+$tmp = '/var/www/pornovirtuale/.llms-full.txt.tmp';
+file_put_contents( $tmp, $out );
+rename( $tmp, '/var/www/pornovirtuale/llms-full.txt' );
 echo 'llms-full.txt aggiornato: ' . strlen( $out ) . " byte\n";
