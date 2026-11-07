@@ -11,6 +11,7 @@ EDIT="$DIR/editorial"
 LOG="$DIR/editorial_batch.log"
 LOCK=/var/lock/editorial_batch.lock
 CAP="${CAP:-800}"
+export CAP
 CONSECUTIVE_MAX="${CONSECUTIVE_MAX:-6}"
 MODEL="${GEN_MODEL:-gemini-3.1-flash-lite}"
 LIST=$(mktemp /tmp/editorial_batch.XXXXXX)
