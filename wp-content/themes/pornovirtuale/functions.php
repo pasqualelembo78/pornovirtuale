@@ -241,6 +241,11 @@ function pv_guide_article_schema( $data, $context = null ) {
 		'@type'       => 'SpeakableSpecification',
 		'cssSelector' => array( 'h1', '.pv-content > p:first-of-type' ),
 	);
+	$data['citation'] = array(
+		'https://it.wikipedia.org/wiki/Realt%C3%A0_virtuale',
+		'https://it.wikipedia.org/wiki/4K',
+		'https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API',
+	);
 
 	return $data;
 }
