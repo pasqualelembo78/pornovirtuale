@@ -128,58 +128,58 @@ get_header();
                 $testo = $editorial ? null : aria_char_page_testo($personaggio, $stadio);
                 ?>
                 <?php if ($editorial) : ?>
-                    <p class="aria-char-page__lead" style="font-size:1.08em;"><?php echo esc_html($editorial['lead']); ?></p>
+                    <p class="aria-char-page__lead" style="font-size:1.08em;"><?php echo esc_html($editorial['lead'] ?? ''); ?></p>
 
                     <h2>Chi è <?php echo esc_html($nome); ?></h2>
-                    <p><?php echo esc_html($editorial['chi']); ?></p>
+                    <p><?php echo esc_html($editorial['chi'] ?? ''); ?></p>
 
                     <h2>Passioni e tempo libero</h2>
-                    <p><?php echo esc_html($editorial['passioni']); ?></p>
+                    <p><?php echo esc_html($editorial['passioni'] ?? ''); ?></p>
 
                     <h2>Come si comporta in chat</h2>
-                    <p><?php echo esc_html($editorial['come']); ?></p>
+                    <p><?php echo esc_html($editorial['come'] ?? ''); ?></p>
 
                     <h2>Cosa vorrebbe fare con te</h2>
-                    <p><?php echo esc_html($editorial['invito']); ?></p>
+                    <p><?php echo esc_html($editorial['invito'] ?? ''); ?></p>
 
                     <h2>Cosa scrivere per iniziare</h2>
-                    <p><?php echo esc_html($editorial['iniziare_intro']); ?></p>
+                    <p><?php echo esc_html($editorial['iniziare_intro'] ?? ''); ?></p>
                     <ul>
-                        <?php foreach ($editorial['esempi'] as $frase) : ?>
+                        <?php foreach ((array) ($editorial['esempi'] ?? array()) as $frase) : ?>
                             <li><?php echo esc_html($frase); ?></li>
                         <?php endforeach; ?>
                     </ul>
 
                     <h2>A chi piace</h2>
-                    <p><?php echo esc_html($editorial['a_chi']); ?></p>
+                    <p><?php echo esc_html($editorial['a_chi'] ?? ''); ?></p>
                 <?php else : ?>
                     <h2>Chi è <?php echo esc_html($nome); ?></h2>
-                    <p><?php echo esc_html($testo['chi']); ?></p>
+                    <p><?php echo esc_html($testo['chi'] ?? ''); ?></p>
 
                     <h2>La scena</h2>
-                    <p><?php echo esc_html($testo['scena']); ?></p>
+                    <p><?php echo esc_html($testo['scena'] ?? ''); ?></p>
 
                     <h2>Come si comporta in chat</h2>
-                    <p><?php echo esc_html($testo['come']); ?></p>
-                    <?php if ($testo['voce']) : ?>
+                    <p><?php echo esc_html($testo['come'] ?? ''); ?></p>
+                    <?php if (!empty($testo['voce'])) : ?>
                         <blockquote style="border-left:3px solid var(--pv-accent,#c9366b);margin:14px 0;padding:6px 0 6px 16px;color:var(--pv-muted);font-style:italic;">
-                            <?php echo esc_html($testo['voce']); ?>
+                            <?php echo esc_html($testo['voce'] ?? ''); ?>
                         </blockquote>
                     <?php endif; ?>
 
                     <h2>Cosa scrivere per iniziare</h2>
                     <ul>
-                        <?php foreach ($testo['iniziare'] as $frase) : ?>
+                        <?php foreach ((array) ($testo['iniziare'] ?? array()) as $frase) : ?>
                             <li><?php echo esc_html($frase); ?></li>
                         <?php endforeach; ?>
                     </ul>
 
                     <h2>A chi piace</h2>
-                    <p><?php echo esc_html($testo['a_chi']); ?></p>
+                    <p><?php echo esc_html($testo['a_chi'] ?? ''); ?></p>
                 <?php endif; ?>
 
                 <p>
-                    <?php echo $editorial ? 'La chat è già aperta qui sotto: ' : esc_html($testo['nota']); ?>
+                    <?php echo $editorial ? 'La chat è già aperta qui sotto: ' : esc_html($testo['nota'] ?? ''); ?>
                     scrivi e risponde in pochi secondi, restando nel personaggio.
                     Hai <strong>quattro messaggi gratis</strong>, poi serve l'accesso.
                 </p>
