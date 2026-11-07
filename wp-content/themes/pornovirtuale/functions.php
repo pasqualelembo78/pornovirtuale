@@ -437,6 +437,28 @@ function pv_noindex_empty_pages( $robots ) {
 }
 add_filter( 'wpseo_robots_array', 'pv_noindex_empty_pages', 20 );
 
+/** Vecchi URL video non più esistenti: 301 al catalogo conservando gli UTM. */
+function pv_redirect_old_video_urls() {
+	if ( ! is_404() ) {
+		return;
+	}
+	$path = (string) wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH );
+	if ( 0 !== strpos( $path, '/video/' ) ) {
+		return;
+	}
+	$target = home_url( '/video-vr/' );
+	$utm    = array_intersect_key(
+		wp_unslash( $_GET ),
+		array_flip( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term' ) )
+	);
+	if ( $utm ) {
+		$target = add_query_arg( $utm, $target );
+	}
+	wp_safe_redirect( $target, 301 );
+	exit;
+}
+add_action( 'template_redirect', 'pv_redirect_old_video_urls', 1 );
+
 /** Immagine social dell'indice del blog. */
 function pv_blog_social_image() {
 	if ( ! is_home() ) {
@@ -666,7 +688,7 @@ function pv_archive_description( $description ) {
 	if ( is_post_type_archive( 'stanza' ) ) {
 		$description = __( 'Stanze live gratuiti con modelli in realta virtuale: entra, guarda e interagisci in diretta.', 'pornovirtuale' );
 	} elseif ( is_post_type_archive( 'video' ) ) {
-		$description = __( 'La raccolta di video in realta virtuale: contenuti 180 e 360, formati per visori e browser.', 'pornovirtuale' );
+		$description = __( 'La raccolta di video in realta virtuale: contenuti 180 e 360, formati per visori e browser. Risoluzioni da 720p a 1080p e oltre, da scegliere in base al dispositivo.', 'pornovirtuale' );
 	}
 
 	return $description;

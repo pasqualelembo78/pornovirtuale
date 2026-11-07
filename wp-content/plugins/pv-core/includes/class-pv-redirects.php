@@ -54,6 +54,33 @@ class PV_Redirects {
 			wp_safe_redirect( home_url( $map[ $path ] ), 301 );
 			exit;
 		}
+
+		// Le vecchie URL di /video/ e /stanze/ che non esistono più non devono
+		// finire in 404: le mandiamo all'archivio della sezione. I contenuti
+		// reali non sono 404 e quindi non vengono toccati.
+		if ( is_404() ) {
+			$utm = array_intersect_key(
+				wp_unslash( $_GET ),
+				array_flip( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term' ) )
+			);
+
+			if ( 0 === strpos( $path, 'video/' ) ) {
+				$target = home_url( '/video-vr/' );
+				if ( $utm ) {
+					$target = add_query_arg( $utm, $target );
+				}
+				wp_safe_redirect( $target, 301 );
+				exit;
+			}
+			if ( 0 === strpos( $path, 'stanze/' ) ) {
+				$target = home_url( '/stanze/' );
+				if ( $utm ) {
+					$target = add_query_arg( $utm, $target );
+				}
+				wp_safe_redirect( $target, 301 );
+				exit;
+			}
+		}
 	}
 
 	/**
