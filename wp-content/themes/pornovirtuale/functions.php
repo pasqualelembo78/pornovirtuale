@@ -171,6 +171,12 @@ function pv_disable_emojis() {
 add_action( 'init', 'pv_disable_emojis' );
 
 /** Schema Organization: segnali di brand per motori e knowledge graph. */
+/** Scoperta dell'indice macchina per agenti AI. */
+function pv_ai_index_link() {
+	printf( '<link rel="alternate" type="application/json" href="%s" />' . "\n", esc_url( home_url( '/ai-index.json' ) ) );
+}
+add_action( 'wp_head', 'pv_ai_index_link', 5 );
+
 function pv_organization_schema() {
 	if ( is_admin() || is_feed() ) {
 		return;
@@ -213,6 +219,32 @@ function pv_organization_schema() {
 	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>\n";
 }
 add_action( 'wp_head', 'pv_organization_schema', 6 );
+
+/** Dati aggiuntivi per la guida sulle risoluzioni VR. */
+function pv_guide_article_schema( $data, $context = null ) {
+	$post = get_post();
+	if ( ! $post || 'video-vr-720p-1080p-4k-differenze' !== $post->post_name ) {
+		return $data;
+	}
+
+	$data['about'] = array(
+		array( '@type' => 'Thing', 'name' => 'Realtà virtuale' ),
+		array( '@type' => 'Thing', 'name' => 'Risoluzione video' ),
+	);
+	$data['mentions'] = array(
+		array( '@type' => 'Thing', 'name' => '1080p' ),
+		array( '@type' => 'Thing', 'name' => '4K UHD' ),
+		array( '@type' => 'Thing', 'name' => 'Bitrate' ),
+		array( '@type' => 'Thing', 'name' => 'Visore VR' ),
+	);
+	$data['speakable'] = array(
+		'@type'       => 'SpeakableSpecification',
+		'cssSelector' => array( 'h1', '.pv-content > p:first-of-type' ),
+	);
+
+	return $data;
+}
+add_filter( 'wpseo_schema_article', 'pv_guide_article_schema', 20, 2 );
 
 /** Schema CollectionPage: aggiunge l'elenco alla pagina WebPage di Yoast. */
 function pv_collection_schema_graph( $graph ) {
@@ -473,6 +505,22 @@ function pv_blog_social_image() {
 	printf( '<meta name="twitter:image:alt" content="%s" />' . "\n", esc_attr__( 'Blog di Pornovirtuale: guide e novità su porno virtuale e VR', 'pornovirtuale' ) );
 }
 add_action( 'wp_head', 'pv_blog_social_image', 6 );
+
+/** Immagine social dalla featured image, per articoli e pagine. */
+function pv_featured_social_image() {
+	if ( is_home() || is_singular( 'stanza' ) || ! is_singular() || ! has_post_thumbnail() ) {
+		return;
+	}
+	$url = get_the_post_thumbnail_url( null, 'full' );
+	if ( ! $url ) {
+		return;
+	}
+	printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr( get_the_title() ) );
+	printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $url ) );
+	printf( '<meta name="twitter:image:alt" content="%s" />' . "\n", esc_attr( get_the_title() ) );
+}
+add_action( 'wp_head', 'pv_featured_social_image', 6 );
 
 /** Immagine social di riserva per le pagine senza immagine in evidenza. */
 function pv_default_social_image() {

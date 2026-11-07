@@ -1,0 +1,76 @@
+<?php
+/**
+ * Costruisce /ai-index.json: indice compatto e machine-readable per crawler AI.
+ * Uso: php build_ai_index.php
+ */
+
+require '/var/www/pornovirtuale/wp-load.php';
+
+$data_dir = '/opt/aria/backend/characters/data';
+$edit_dir = '/opt/aria/backend/characters/editorial';
+
+$totale = 0;
+$categorie = array();
+foreach ( glob( $data_dir . '/*.json' ) as $file ) {
+	if ( 'categories.json' === basename( $file ) ) {
+		continue;
+	}
+	$cat     = basename( $file, '.json' );
+	$righe   = json_decode( (string) file_get_contents( $file ), true ) ?: array();
+	$totale += count( $righe );
+	$categorie[] = array(
+		'name' => ucfirst( str_replace( '-', ' ', $cat ) ),
+		'url'  => home_url( '/stanza/' . $cat . '/' ),
+	);
+}
+
+$editoriali = count( glob( $edit_dir . '/*/*.json' ) );
+
+$pagine = array(
+	array( 'title' => 'Home', 'url' => home_url( '/' ), 'description' => 'Stanze live VR, video 180/360 e guida al porno virtuale.' ),
+	array( 'title' => 'Guida 720p, 1080p e 4K in VR', 'url' => home_url( '/video-vr-720p-1080p-4k-differenze/' ), 'description' => 'Cosa cambia tra le risoluzioni in realtà virtuale: bitrate, visore, connessione, limiti.' ),
+	array( 'title' => 'Catalogo video VR', 'url' => home_url( '/video-vr/' ), 'description' => 'Video VR a 180 e 360 gradi, con risoluzioni e formati indicati.' ),
+	array( 'title' => 'Stanze live', 'url' => home_url( '/stanze-live/' ), 'description' => 'Elenco delle stanze di chat a tema con personaggi inventati.' ),
+	array( 'title' => 'Come funziona', 'url' => home_url( '/come-funziona/' ), 'description' => 'Accesso, prova gratuita, login e uso da browser o visore.' ),
+	array( 'title' => 'Chi siamo', 'url' => home_url( '/chi-siamo/' ), 'description' => 'Redazione, metodo di test e criteri editoriali.' ),
+	array( 'title' => 'Personaggi inventati', 'url' => home_url( '/personaggi-inventati/' ), 'description' => 'Come sono costruiti i personaggi e perché non sono persone reali.' ),
+	array( 'title' => 'Blog', 'url' => home_url( '/blog/' ), 'description' => 'Guide, tutorial, confronti e sicurezza.' ),
+);
+
+$indice = array(
+	'site'        => 'Pornovirtuale.com',
+	'language'    => 'it-IT',
+	'updated'     => gmdate( 'c' ),
+	'description' => 'Guida italiana a porno virtuale e cam VR: stanze live, video 180/360, schede di personaggi inventati e guide pratiche. Contenuti 18+.',
+	'license'     => array(
+		'citation' => 'Citazione consentita con link alla pagina e data di aggiornamento; non è consentita la ripubblicazione integrale.',
+		'url'      => home_url( '/chi-siamo/' ),
+	),
+	'facts'       => array(
+		'Lingua italiana, contenuti per adulti 18+.',
+		'Nessuna installazione per navigare; accesso da browser o visore.',
+		'La prova chat prevede 4 messaggi gratis, poi serve l’accesso.',
+		'I personaggi delle chat sono inventati e non corrispondono a persone reali.',
+		'Le pagine personaggio pubblicate hanno testo editoriale, FAQ e data di aggiornamento.',
+		'I link affiliati sono segnalati con rel="nofollow sponsored".',
+	),
+	'stats'       => array(
+		'characters_total'     => $totale,
+		'characters_editorial' => $editoriali,
+		'rooms'                => (int) wp_count_posts( 'stanza' )->publish,
+		'videos'               => (int) wp_count_posts( 'video' )->publish,
+		'guides'               => (int) wp_count_posts( 'post' )->publish,
+	),
+	'key_pages'   => $pagine,
+	'categories'  => $categorie,
+	'feeds'       => array(
+		'sitemap_index' => home_url( '/sitemap_index.xml' ),
+		'character_sitemap' => home_url( '/?aria_char_sitemap=top' ),
+		'llms'          => home_url( '/llms.txt' ),
+		'rss'           => home_url( '/feed/' ),
+	),
+);
+
+$json = wp_json_encode( $indice, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
+file_put_contents( '/var/www/pornovirtuale/ai-index.json', $json . "\n" );
+echo "ai-index.json aggiornato: {$editoriali}/{$totale} schede editoriali\n";

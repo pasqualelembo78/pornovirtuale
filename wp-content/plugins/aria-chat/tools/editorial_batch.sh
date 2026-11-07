@@ -91,6 +91,9 @@ done <"$LIST"
 # Immagini social per le pagine appena editorializzate (solo quelle mancanti).
 php /opt/aria/backend/characters/make_images.php >>"$LOG" 2>&1
 
+# Aggiorna l'indice machine-readable per i crawler AI.
+php /opt/aria/backend/characters/build_ai_index.php >>"$LOG" 2>&1
+
 # Segnala a IndexNow gli URL nuovi (Bing, Yandex, Seznam).
 if [ -s "$INDEX_LIST" ]; then
     echo "$(date -Is) indexnow: $(wc -l <"$INDEX_LIST") URL" >>"$LOG"
