@@ -54,7 +54,7 @@ foreach ( $ids as $post ) {
 // Un esempio di scheda personaggio per mostrare il formato dei contenuti.
 $char_data = json_decode( (string) file_get_contents( '/opt/aria/backend/characters/data/amanti-segreti.json' ), true ) ?: array();
 foreach ( array_slice( $char_data, 0, 3 ) as $riga ) {
-	$slug = sanitize_title( $riga['full_name'] ?? '' );
+	$slug = ! empty( $riga['slug'] ) ? $riga['slug'] : sanitize_title( $riga['full_name'] ?? '' );
 	$file = '/opt/aria/backend/characters/editorial/amanti-segreti/' . $slug . '.json';
 	if ( ! is_file( $file ) ) {
 		continue;

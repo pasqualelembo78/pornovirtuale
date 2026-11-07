@@ -35,7 +35,7 @@ foreach ( glob( $data_dir . '/*.json' ) as $file ) {
 			continue;
 		}
 
-		$slug = sanitize_title( $nome );
+		$slug = ! empty( $riga['slug'] ) ? $riga['slug'] : sanitize_title( $nome );
 		$json = $edit_dir . '/' . $cat . '/' . $slug . '.json';
 		if ( ! is_file( $json ) ) {
 			continue;
