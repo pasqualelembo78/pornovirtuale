@@ -31,6 +31,24 @@
     font-size: 20px;
 }
 
+.aria-app-cta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #f4f1fb;
+    color: #4a3b6b;
+    font-size: 12px;
+    border-bottom: 1px solid #e6e0f3;
+    flex-shrink: 0;
+}
+
+.aria-app-cta a {
+    color: #6a1b9a;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
 .aria-chat-controls {
     display: flex;
     gap: 8px;

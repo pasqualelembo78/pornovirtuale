@@ -57,6 +57,11 @@ $chat_greeting = $is_dedicated
             <?php endif; ?>
         </div>
     </div>
+    <div class="aria-app-cta">
+        📱 Vuoi questa chat sul telefono?
+        <a href="https://play.google.com/store/apps/details?id=com.intelligame.chatai"
+           target="_blank" rel="noopener">Scarica l'app Aria</a>
+    </div>
     <?php if ($is_dedicated): ?>
     <input type="hidden" id="aria-preset-character" value="<?php echo esc_attr($atts['character']); ?>" />
     <?php else: ?>

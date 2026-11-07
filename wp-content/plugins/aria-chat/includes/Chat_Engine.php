@@ -274,7 +274,7 @@ class Aria_Chat_Engine {
         curl_setopt_array($ch, array(
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => wp_json_encode($corpo),
-            CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->api_client->get_access_token(), 'Accept: text/event-stream'),
+            CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->api_client->get_access_token(), 'Accept: text/event-stream', 'X-Content-Mode: adult'),
             CURLOPT_TIMEOUT => 400,
             CURLOPT_WRITEFUNCTION => function ($curl, $pezzo) use (&$resto) {
                 $resto .= $pezzo;
@@ -340,7 +340,7 @@ class Aria_Chat_Engine {
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => wp_json_encode(array('character' => $character_id, 'username' => 'utente')),
             CURLOPT_HTTPHEADER => array('Content-Type: application/json',
-                'Authorization: Bearer ' . $token),
+                'Authorization: Bearer ' . $token, 'X-Content-Mode: adult'),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 90,
         ));
@@ -391,7 +391,7 @@ class Aria_Chat_Engine {
         curl_setopt_array($ch, array(
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->api_client->get_access_token(), 'Accept: text/event-stream'),
+            CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . $this->api_client->get_access_token(), 'Accept: text/event-stream', 'X-Content-Mode: adult'),
             CURLOPT_TIMEOUT => 240,
             CURLOPT_WRITEFUNCTION => function ($curl, $pezzo) use (&$resto) {
                 $resto .= $pezzo;
@@ -644,6 +644,7 @@ class Aria_Chat_Engine {
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->api_client->get_access_token(),
                 'Accept: text/event-stream',
+                'X-Content-Mode: adult',
             ),
             CURLOPT_TIMEOUT => 300,
             CURLOPT_WRITEFUNCTION => function ($curl, $pezzo) use ($esci, &$buffer_parziale) {

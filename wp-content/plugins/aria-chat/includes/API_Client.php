@@ -32,7 +32,8 @@ class Aria_API_Client {
     private function get_headers($needs_auth = true) {
         $headers = array(
             'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
+            'X-Content-Mode' => 'adult'
         );
         if ($needs_auth && $this->access_token) {
             $headers['Authorization'] = 'Bearer ' . $this->access_token;

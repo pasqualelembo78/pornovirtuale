@@ -4,7 +4,9 @@
  * Uso: php make_images.php [--force]
  */
 
-$force = in_array( '--force', $argv, true );
+$force    = in_array( '--force', $argv, true );
+$only_cat = ( $argv[1] ?? '' ) !== '--force' ? ( $argv[1] ?? '' ) : '';
+$only_slug = $only_cat ? ( $argv[2] ?? '' ) : '';
 $base_data = '/opt/aria/backend/characters/data';
 $base_edit = '/opt/aria/backend/characters/editorial';
 $avatars   = '/opt/aria/backend/static/avatars';
@@ -39,7 +41,14 @@ foreach ( (array) json_decode( (string) @file_get_contents( $base_data . '/categ
 $ok = 0;
 $ko = 0;
 
-foreach ( glob( $base_edit . '/*/*.json' ) as $edit ) {
+$elenco = ( $only_cat && $only_slug )
+	? array( $base_edit . '/' . $only_cat . '/' . $only_slug . '.json' )
+	: glob( $base_edit . '/*/*.json' );
+
+foreach ( $elenco as $edit ) {
+	if ( ! is_file( $edit ) ) {
+		continue;
+	}
 	$cat  = basename( dirname( $edit ) );
 	$slug = basename( $edit, '.json' );
 	$out_dir = $out_root . '/' . $cat;

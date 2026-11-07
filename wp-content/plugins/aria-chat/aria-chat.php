@@ -3,7 +3,7 @@
  * Plugin Name: Aria Chat AI
  * Plugin URI: https://www.mevacoin.com
  * Description: Chat AI con personaggi virtuali. Si collega al backend ARIA per conversazioni intelligenti.
- * Version: 1.0.0
+ * Version: 1.0.3-local-seo
  * Author: IntelliGame
  * Author URI: https://www.mevacoin.com
  * License: GPL v2 or later
@@ -12,7 +12,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('ARIA_CHAT_VERSION', '1.0.0');
+define('ARIA_CHAT_VERSION', '1.0.3-local-seo');
 define('ARIA_CHAT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ARIA_CHAT_PLUGIN_URL', plugin_dir_url(__FILE__));
 

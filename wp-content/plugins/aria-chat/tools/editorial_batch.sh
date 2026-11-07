@@ -74,6 +74,7 @@ while read -r CAT SLUG; do
     [ -z "${CAT:-}" ] && continue
     if GEN_MODEL="$MODEL" php /opt/aria/backend/characters/gen_one.php "$CAT" "$SLUG" >>"$LOG" 2>&1; then
         OK=$((OK + 1))
+        php /opt/aria/backend/characters/make_images.php "$CAT" "$SLUG" >>"$LOG" 2>&1
         echo "https://pornovirtuale.com/stanza/$CAT/$SLUG/" >>"$INDEX_LIST"
         CONSEC=0
     else
