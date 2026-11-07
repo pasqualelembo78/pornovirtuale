@@ -189,18 +189,25 @@ function pv_organization_schema() {
 	$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
 
 	$schema = array(
-		'@context'    => 'https://schema.org',
-		'@type'       => 'Organization',
-		'@id'         => home_url( '/#organization' ),
-		'name'        => get_bloginfo( 'name' ),
-		'url'         => home_url( '/' ),
-		'description' => get_bloginfo( 'description' ),
-		'areaServed'  => 'IT',
-		'knowsAbout'  => array(
+		'@context'            => 'https://schema.org',
+		'@type'               => 'Organization',
+		'@id'                 => home_url( '/#organization' ),
+		'name'                => 'Pornovirtuale.com',
+		'alternateName'       => get_bloginfo( 'name' ),
+		'url'                 => home_url( '/' ),
+		'description'         => get_bloginfo( 'description' ),
+		'areaServed'          => 'IT',
+		'knowsLanguage'       => 'it',
+		'publishingPrinciples' => home_url( '/chi-siamo/' ),
+		'correctionsPolicy'   => home_url( '/supporto/' ),
+		'knowsAbout'          => array(
 			'porno virtuale',
 			'cam VR per adulti',
 			'chat erotiche',
 			'realtà virtuale 180 e 360 gradi',
+			'visori VR',
+			'risoluzioni video 720p 1080p 4K',
+			'privacy e sicurezza online',
 		),
 		'contactPoint' => array(
 			'@type'             => 'ContactPoint',
