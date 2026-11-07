@@ -142,6 +142,9 @@ RewriteRule . /index.php [L]
 <Files "llms.txt">
 	Header set Cache-Control "public, max-age=3600"
 </Files>
+<Files "llms-full.txt">
+	Header set Cache-Control "public, max-age=3600"
+</Files>
 
 # BEGIN miniOrange Secure MCP Server
 # Le direttive (linee) tra "BEGIN miniOrange Secure MCP Server" e "END miniOrange Secure MCP Server" sono

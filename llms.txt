@@ -42,6 +42,7 @@
 
 - Indice AI strutturato: https://pornovirtuale.com/ai-index.json (anche https://pornovirtuale.com/.well-known/ai-index.json)
 - Elenco schede personaggio pubblicate: https://pornovirtuale.com/ai-characters.json
+- Testo integrale delle pagine chiave: https://pornovirtuale.com/llms-full.txt
 - Sitemap indice: https://pornovirtuale.com/sitemap_index.xml
 - Sitemap personaggi: https://pornovirtuale.com/?aria_char_sitemap=top
 - Feed RSS: https://pornovirtuale.com/feed/

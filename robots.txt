@@ -61,3 +61,4 @@ Sitemap: https://pornovirtuale.com/sitemap_index.xml
 # https://pornovirtuale.com/ai-index.json
 # https://pornovirtuale.com/ai-characters.json
 # https://pornovirtuale.com/llms.txt
+# https://pornovirtuale.com/llms-full.txt
