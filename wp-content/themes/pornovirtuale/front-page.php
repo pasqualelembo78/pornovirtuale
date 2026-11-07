@@ -66,11 +66,13 @@ $pv_featured = get_posts(
 	</div>
 </section>
 
-<section class="section" style="background:var(--pv-bg-2);">
-	<div class="container">
-		<?php echo do_shortcode( '[pv_cam_live title="' . esc_attr__( 'Cam live in diretta', 'pornovirtuale' ) . '"]' ); ?>
-	</div>
-</section>
+<?php if ( function_exists( 'PV_Embed::cam_live_configured' ) && PV_Embed::cam_live_configured() ) : ?>
+	<section class="section" style="background:var(--pv-bg-2);">
+		<div class="container">
+			<?php echo do_shortcode( '[pv_cam_live title="' . esc_attr__( 'Cam live in diretta', 'pornovirtuale' ) . '"]' ); ?>
+		</div>
+	</section>
+<?php endif; ?>
 
 <section class="section">
 	<div class="container">

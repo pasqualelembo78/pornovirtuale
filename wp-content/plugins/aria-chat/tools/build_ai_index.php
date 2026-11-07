@@ -77,7 +77,7 @@ usort(
 );
 
 $pagine = array(
-	array( 'title' => 'Home', 'url' => home_url( '/' ), 'description' => 'Stanze live VR, video 180/360 e guida al porno virtuale.' ),
+	array( 'title' => 'Home', 'url' => home_url( '/' ), 'description' => 'Pornovirtuale.com: contenuti editoriali, video VR, stanze live, personaggi virtuali e chat AI sul porno virtuale. Accesso gratuito da browser o visore.' ),
 	array( 'title' => 'Guida 720p, 1080p e 4K in VR', 'url' => home_url( '/video-vr-720p-1080p-4k-differenze/' ), 'description' => 'Cosa cambia tra le risoluzioni in realtà virtuale: bitrate, visore, connessione, limiti.' ),
 	array( 'title' => 'Come scegliere un visore VR', 'url' => home_url( '/scegliere-visore-vr-contenuti-adulti/' ), 'description' => 'Risoluzione per occhio, campo visivo, refresh, codec e comfort: come scegliere il visore.' ),
 	array( 'title' => 'Catalogo video VR', 'url' => home_url( '/video-vr/' ), 'description' => 'Video VR a 180 e 360 gradi, con risoluzioni e formati indicati.' ),
@@ -92,7 +92,7 @@ $indice = array(
 	'site'        => 'Pornovirtuale.com',
 	'language'    => 'it-IT',
 	'updated'     => gmdate( 'c' ),
-	'description' => 'Guida italiana a porno virtuale e cam VR: stanze live, video 180/360, schede di personaggi inventati e guide pratiche. Contenuti 18+.',
+	'description' => 'Pornovirtuale.com: guida italiana a porno virtuale e cam VR con contenuti editoriali, video VR, stanze live, personaggi virtuali e chat AI. Contenuti 18+.',
 	'license'     => array(
 		'citation' => 'Citazione consentita con link alla pagina e data di aggiornamento; non è consentita la ripubblicazione integrale.',
 		'url'      => home_url( '/chi-siamo/' ),

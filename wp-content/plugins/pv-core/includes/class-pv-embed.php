@@ -373,6 +373,18 @@ class PV_Embed {
 	}
 
 	/**
+	 * Indica se è configurata una sorgente cam live affiliata.
+	 * Usato dal front page per non mostrare il segnaposto operativo ai visitatori.
+	 */
+	public static function cam_live_configured() {
+		if ( PV_Settings::get( 'aff_cam_widget', '' ) ) {
+			return true;
+		}
+		$room = PV_Settings::get( 'aff_default_room', '' );
+		return (bool) $room && false !== strpos( $room, ':' );
+	}
+
+	/**
 	 * Widget cam affiliate (sorgente live esterna).
 	 */
 	public static function sc_cam_live( $atts ) {
