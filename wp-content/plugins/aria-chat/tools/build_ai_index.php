@@ -44,11 +44,19 @@ foreach ( glob( $data_dir . '/*.json' ) as $file ) {
 		$editoriale = json_decode( (string) file_get_contents( $json ), true ) ?: array();
 		$aggiornato = $editoriale['generated_at'] ?? '';
 
+		$descrizione = $editoriale['lead'] ?? ( $editoriale['chi'] ?? '' );
+		$descrizione = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $descrizione ) ) );
+		if ( mb_strlen( $descrizione ) > 180 ) {
+			$descrizione = rtrim( mb_substr( $descrizione, 0, 177 ) ) . '…';
+		}
+
 		$personaggi[] = array(
-			'name'     => $nome,
-			'url'      => home_url( '/stanza/' . $cat . '/' . $slug . '/' ),
-			'category' => str_replace( '-', ' ', $cat ),
-			'updated'  => $aggiornato,
+			'name'        => $nome,
+			'url'         => home_url( '/stanza/' . $cat . '/' . $slug . '/' ),
+			'category'    => str_replace( '-', ' ', $cat ),
+			'role'        => $riga['role'] ?? '',
+			'description' => $descrizione,
+			'updated'     => $aggiornato,
 		);
 		++$pubblicati;
 	}
@@ -111,6 +119,7 @@ $indice = array(
 		'character_sitemap'  => home_url( '/?aria_char_sitemap=top' ),
 		'characters'         => home_url( '/ai-characters.json' ),
 		'llms'               => home_url( '/llms.txt' ),
+		'llms_full'          => home_url( '/llms-full.txt' ),
 		'rss'                => home_url( '/feed/' ),
 	),
 );
