@@ -478,7 +478,7 @@ add_filter( 'wpseo_sitemap_index_links', 'pv_remove_author_sitemap', 30 );
 
 /**
  * L'archivio dei modelli e performer è una pagina editoriale pubblica
- * (profili e stanze live): viene inclusa nelle sitemap.
+ * (profili e stanze live): viene incluso nelle sitemap.
  */
 function pv_include_models_sitemap( $types ) {
 	if ( is_array( $types ) && ! isset( $types['modello'] ) ) {
@@ -486,7 +486,7 @@ function pv_include_models_sitemap( $types ) {
 	}
 	return $types;
 }
-add_filter( 'wpseo_sitemap_post_types', 'pv_include_models_sitemap', 20 );
+add_filter( 'wpseo_accessible_post_types', 'pv_include_models_sitemap', 20 );
 
 /**
  * Meta description di riserva per video, stanze senza personaggio e categorie
