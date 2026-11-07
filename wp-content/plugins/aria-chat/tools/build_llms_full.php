@@ -11,6 +11,7 @@ $pagine = array(
 	'chi-siamo',
 	'personaggi-inventati',
 	'video-vr-720p-1080p-4k-differenze',
+	'scegliere-visore-vr-contenuti-adulti',
 );
 
 $ids = array();
@@ -20,9 +21,11 @@ foreach ( $pagine as $slug ) {
 		$ids[ $p->ID ] = $p;
 	}
 }
-$posta_guida = get_page_by_path( 'video-vr-720p-1080p-4k-differenze', OBJECT, 'post' );
-if ( $posta_guida ) {
-	$ids[ $posta_guida->ID ] = $posta_guida;
+foreach ( array( 'video-vr-720p-1080p-4k-differenze', 'scegliere-visore-vr-contenuti-adulti' ) as $slug_guida ) {
+	$posta_guida = get_page_by_path( $slug_guida, OBJECT, 'post' );
+	if ( $posta_guida ) {
+		$ids[ $posta_guida->ID ] = $posta_guida;
+	}
 }
 
 $out  = "# Pornovirtuale.com — contenuti completi per agenti AI\n\n";

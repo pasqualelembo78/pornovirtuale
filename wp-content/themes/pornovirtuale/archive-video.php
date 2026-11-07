@@ -14,7 +14,7 @@ get_header();
 		<?php if ( get_the_archive_description() ) : ?>
 			<p style="color:var(--pv-muted);max-width:760px;"><?php echo esc_html( get_the_archive_description() ); ?></p>
 		<?php endif; ?>
-		<p><a href="<?php echo esc_url( home_url( '/video-vr-720p-1080p-4k-differenze/' ) ); ?>">Guida: 720p, 1080p e 4K in VR, cosa cambia davvero</a></p>
+		<p><a href="<?php echo esc_url( home_url( '/video-vr-720p-1080p-4k-differenze/' ) ); ?>">Guida: 720p, 1080p e 4K in VR, cosa cambia davvero</a> · <a href="<?php echo esc_url( home_url( '/scegliere-visore-vr-contenuti-adulti/' ) ); ?>">Come scegliere un visore VR</a></p>
 	</div>
 </section>
 

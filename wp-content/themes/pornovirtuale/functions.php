@@ -230,32 +230,53 @@ function pv_organization_schema() {
 }
 add_action( 'wp_head', 'pv_organization_schema', 6 );
 
-/** Dati aggiuntivi per la guida sulle risoluzioni VR. */
+/** Dati aggiuntivi per le guide sulle risoluzioni e sui visori VR. */
 function pv_guide_article_schema( $data, $context = null ) {
 	$post = get_post();
-	if ( ! $post || 'video-vr-720p-1080p-4k-differenze' !== $post->post_name ) {
+	if ( ! $post ) {
 		return $data;
 	}
 
-	$data['about'] = array(
-		array( '@type' => 'Thing', 'name' => 'Realtà virtuale' ),
-		array( '@type' => 'Thing', 'name' => 'Risoluzione video' ),
+	$guide = array(
+		'video-vr-720p-1080p-4k-differenze' => array(
+			'about'    => array( 'Realtà virtuale', 'Risoluzione video' ),
+			'mentions' => array( '1080p', '4K UHD', 'Bitrate', 'Visore VR' ),
+			'citation' => array(
+				'https://it.wikipedia.org/wiki/Realt%C3%A0_virtuale',
+				'https://it.wikipedia.org/wiki/4K',
+				'https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API',
+			),
+		),
+		'scegliere-visore-vr-contenuti-adulti' => array(
+			'about'    => array( 'Realtà virtuale', 'Visore VR' ),
+			'mentions' => array( 'Campo visivo', 'Frequenza di aggiornamento', 'Codec video', 'Comfort' ),
+			'citation' => array(
+				'https://it.wikipedia.org/wiki/Realt%C3%A0_virtuale',
+				'https://it.wikipedia.org/wiki/Codifica_video',
+				'https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API',
+			),
+		),
 	);
-	$data['mentions'] = array(
-		array( '@type' => 'Thing', 'name' => '1080p' ),
-		array( '@type' => 'Thing', 'name' => '4K UHD' ),
-		array( '@type' => 'Thing', 'name' => 'Bitrate' ),
-		array( '@type' => 'Thing', 'name' => 'Visore VR' ),
-	);
+
+	if ( ! isset( $guide[ $post->post_name ] ) ) {
+		return $data;
+	}
+
+	$config = $guide[ $post->post_name ];
+
+	$data['about'] = array();
+	foreach ( $config['about'] as $voce ) {
+		$data['about'][] = array( '@type' => 'Thing', 'name' => $voce );
+	}
+	$data['mentions'] = array();
+	foreach ( $config['mentions'] as $voce ) {
+		$data['mentions'][] = array( '@type' => 'Thing', 'name' => $voce );
+	}
 	$data['speakable'] = array(
 		'@type'       => 'SpeakableSpecification',
 		'cssSelector' => array( 'h1', '.pv-content > p:first-of-type' ),
 	);
-	$data['citation'] = array(
-		'https://it.wikipedia.org/wiki/Realt%C3%A0_virtuale',
-		'https://it.wikipedia.org/wiki/4K',
-		'https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API',
-	);
+	$data['citation'] = $config['citation'];
 
 	return $data;
 }

@@ -79,6 +79,7 @@ usort(
 $pagine = array(
 	array( 'title' => 'Home', 'url' => home_url( '/' ), 'description' => 'Stanze live VR, video 180/360 e guida al porno virtuale.' ),
 	array( 'title' => 'Guida 720p, 1080p e 4K in VR', 'url' => home_url( '/video-vr-720p-1080p-4k-differenze/' ), 'description' => 'Cosa cambia tra le risoluzioni in realtà virtuale: bitrate, visore, connessione, limiti.' ),
+	array( 'title' => 'Come scegliere un visore VR', 'url' => home_url( '/scegliere-visore-vr-contenuti-adulti/' ), 'description' => 'Risoluzione per occhio, campo visivo, refresh, codec e comfort: come scegliere il visore.' ),
 	array( 'title' => 'Catalogo video VR', 'url' => home_url( '/video-vr/' ), 'description' => 'Video VR a 180 e 360 gradi, con risoluzioni e formati indicati.' ),
 	array( 'title' => 'Stanze live', 'url' => home_url( '/stanze-live/' ), 'description' => 'Elenco delle stanze di chat a tema con personaggi inventati.' ),
 	array( 'title' => 'Come funziona', 'url' => home_url( '/come-funziona/' ), 'description' => 'Accesso, prova gratuita, login e uso da browser o visore.' ),
