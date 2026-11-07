@@ -230,6 +230,52 @@ function pv_organization_schema() {
 }
 add_action( 'wp_head', 'pv_organization_schema', 6 );
 
+/** Autore editoriale: la redazione è un'entità organizzativa, non una persona fisica. */
+function pv_author_schema_data( $data, $user_id ) {
+	if ( 1 !== (int) $user_id ) {
+		return $data;
+	}
+
+	$data['@type']       = 'Organization';
+	$data['url']         = home_url( '/chi-siamo/' );
+	$data['description'] = 'Redazione editoriale di Pornovirtuale.com: scrive e verifica guide su chat VR, visori, risoluzioni video, privacy e sicurezza.';
+	$data['knowsAbout']  = array(
+		'porno virtuale',
+		'chat erotiche',
+		'realtà virtuale',
+		'visori VR',
+		'privacy online',
+	);
+	$data['worksFor']    = array( '@id' => home_url( '/#organization' ) );
+
+	return $data;
+}
+add_filter( 'wpseo_schema_person_data', 'pv_author_schema_data', 20, 2 );
+
+/** Rifinisce il nodo autore nel grafo Yoast: organizzazione, URL editoriale, niente avatar. */
+function pv_author_schema_graph( $graph, $context = null ) {
+	foreach ( $graph as $key => $piece ) {
+		if ( ! is_array( $piece ) || 'Redazione Pornovirtuale' !== ( $piece['name'] ?? '' ) ) {
+			continue;
+		}
+		$graph[ $key ]['@type'] = 'Organization';
+		$graph[ $key ]['url']   = home_url( '/chi-siamo/' );
+		unset( $graph[ $key ]['image'], $graph[ $key ]['sameAs'] );
+
+		$logo_id  = (int) get_option( 'site_icon' );
+		$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+		if ( $logo_url ) {
+			$graph[ $key ]['logo'] = array(
+				'@type' => 'ImageObject',
+				'url'   => $logo_url,
+			);
+		}
+	}
+
+	return $graph;
+}
+add_filter( 'wpseo_schema_graph', 'pv_author_schema_graph', 20, 2 );
+
 /** Dati aggiuntivi per le guide sulle risoluzioni e sui visori VR. */
 function pv_guide_article_schema( $data, $context = null ) {
 	$post = get_post();
