@@ -131,6 +131,15 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
+
+# File macchina per crawler AI: cache breve, contenuto aggiornabile.
+<Files "ai-index.json">
+	Header set Cache-Control "public, max-age=3600"
+</Files>
+<Files "llms.txt">
+	Header set Cache-Control "public, max-age=3600"
+</Files>
+
 # BEGIN miniOrange Secure MCP Server
 # Le direttive (linee) tra "BEGIN miniOrange Secure MCP Server" e "END miniOrange Secure MCP Server" sono
 # generate dinamicamente, e dovrebbero essere modificate solo tramite i filtri di WordPress.
